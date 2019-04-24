@@ -1,0 +1,22 @@
+PATH
+  remote: .
+  specs:
+    actionview_precompiler (0.1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    minitest (5.11.3)
+    rake (12.3.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  actionview_precompiler!
+  bundler (~> 2.1.a)
+  minitest (~> 5.0)
+  rake (~> 12.0)
+
+BUNDLED WITH
+   2.1.0.pre.1
