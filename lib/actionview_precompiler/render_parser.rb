@@ -1,7 +1,7 @@
 require "parser/current"
 
 module ActionviewPrecompiler
-  RenderCall = Struct.new(:render_type, :template, :locals)
+  RenderCall = Struct.new(:render_type, :template, :locals, :locals_keys)
 
   class RenderParser
     def initialize(code)
@@ -28,7 +28,6 @@ module ActionviewPrecompiler
           return unless node[3].type == :hash
           options[:locals] = node[3]
         end
-        pp node => options
         return parse_render_from_options(options)
       elsif node.length == 3 && node[2].type == :hash
         options = parse_hash_to_symbols(node[2])
@@ -50,7 +49,6 @@ module ActionviewPrecompiler
     def parse_hash_to_symbols(node)
       hash = parse_hash(node)
       return unless hash
-      pp hash
       hash.transform_keys do |node|
         key = parse_sym(node)
         return unless key
@@ -78,13 +76,19 @@ module ActionviewPrecompiler
       render_type = (RENDER_TYPE_KEYS & RENDER_TYPE_KEYS)[0]
       template = parse_str(options_hash[render_type])
 
-      locals =
-        if options_hash.key?(:locals)
-        else
-          []
+      if options_hash.key?(:locals)
+        locals = options_hash[:locals]
+        parsed_locals = parse_hash(locals)
+        locals_keys = parsed_locals.keys.map do |local|
+          return nil unless local.type == :str || local.type == :sym
+          local.children[0]
         end
+      else
+        locals = Parser::AST::Node.new(:hash)
+        locals_keys = []
+      end
 
-      RenderCall.new(render_type, template)
+      RenderCall.new(render_type, template, locals, locals_keys)
     end
 
     def parse_str(node)
