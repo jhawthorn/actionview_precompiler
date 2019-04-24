@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "parser", "~> 2.6"
+  spec.add_dependency "actionview", ">= 6.0.a"
 
   spec.add_development_dependency "bundler", "~> 2.1.a"
   spec.add_development_dependency "rake", "~> 12.0"

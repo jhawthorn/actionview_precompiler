@@ -2,16 +2,55 @@ PATH
   remote: .
   specs:
     actionview_precompiler (0.1.0)
+      actionview (>= 6.0.a)
       parser (~> 2.6)
 
 GEM
   remote: https://rubygems.org/
   specs:
+    actionview (6.0.0.rc1)
+      activesupport (= 6.0.0.rc1)
+      builder (~> 3.1)
+      erubi (~> 1.4)
+      rails-dom-testing (~> 2.0)
+      rails-html-sanitizer (~> 1.0, >= 1.0.3)
+    activesupport (6.0.0.rc1)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 0.7, < 2)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
+      zeitwerk (~> 2.1, >= 2.1.4)
     ast (2.4.0)
+    builder (3.2.3)
+    coderay (1.1.2)
+    concurrent-ruby (1.1.5)
+    crass (1.0.4)
+    erubi (1.8.0)
+    i18n (1.6.0)
+      concurrent-ruby (~> 1.0)
+    loofah (2.2.3)
+      crass (~> 1.0.2)
+      nokogiri (>= 1.5.9)
+    method_source (0.9.2)
+    mini_portile2 (2.4.0)
     minitest (5.11.3)
+    nokogiri (1.10.3)
+      mini_portile2 (~> 2.4.0)
     parser (2.6.2.1)
       ast (~> 2.4.0)
+    pry (0.12.2)
+      coderay (~> 1.1.0)
+      method_source (~> 0.9.0)
+    rails-dom-testing (2.0.3)
+      activesupport (>= 4.2.0)
+      nokogiri (>= 1.6)
+    rails-html-sanitizer (1.0.4)
+      loofah (~> 2.2, >= 2.2.2)
     rake (12.3.2)
+    thread_safe (0.3.6)
+    tzinfo (1.2.5)
+      thread_safe (~> 0.1)
+    zeitwerk (2.1.5)
 
 PLATFORMS
   ruby
@@ -20,6 +59,7 @@ DEPENDENCIES
   actionview_precompiler!
   bundler (~> 2.1.a)
   minitest (~> 5.0)
+  pry
   rake (~> 12.0)
 
 BUNDLED WITH
