@@ -2,11 +2,15 @@ PATH
   remote: .
   specs:
     actionview_precompiler (0.1.0)
+      parser (~> 2.6)
 
 GEM
   remote: https://rubygems.org/
   specs:
+    ast (2.4.0)
     minitest (5.11.3)
+    parser (2.6.2.1)
+      ast (~> 2.4.0)
     rake (12.3.2)
 
 PLATFORMS
