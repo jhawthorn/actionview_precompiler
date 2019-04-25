@@ -21,6 +21,8 @@ module ActionviewPrecompiler
       end
     end
 
+    attr_reader :templates
+
     def initialize(view_dirs)
       @templates =
         view_dirs.flat_map do |view_dir|
