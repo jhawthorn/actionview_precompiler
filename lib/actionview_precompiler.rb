@@ -15,6 +15,10 @@ module ActionviewPrecompiler
     precompiler.each_lookup_args do |args|
       puts "preloading: #{args.inspect}"
       templates = view_paths.find_all(*args)
+      templates.each do |template|
+        mod = target.view_context_class
+        template.send(:compile!, mod)
+      end
     end
   end
 end

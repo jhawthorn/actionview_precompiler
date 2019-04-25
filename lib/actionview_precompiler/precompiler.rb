@@ -45,7 +45,11 @@ module ActionviewPrecompiler
           formats: Array(template.details[:format]),
           handlers: Array(template.details[:handler])
         }
-        yield [template.action, template.prefix, template.partial?, details, nil, locals]
+
+        # Hack: We need a key to ensure that the UnboundTemplate gets cached
+        key = :precompile
+
+        yield [template.action, template.prefix, template.partial?, details, key, locals]
       end
 
       nil
