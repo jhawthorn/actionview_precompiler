@@ -81,12 +81,14 @@ module ActionviewPrecompiler
         return nil
       end
 
-      render_type = (RENDER_TYPE_KEYS & RENDER_TYPE_KEYS)[0]
+      render_type = (keys & RENDER_TYPE_KEYS)[0]
       template = parse_str(options_hash[render_type])
+      return unless template
 
       if options_hash.key?(:locals)
         locals = options_hash[:locals]
         parsed_locals = parse_hash(locals)
+        return nil unless parsed_locals
         locals_keys = parsed_locals.keys.map do |local|
           return nil unless local.type == :str || local.type == :sym
           local.children[0]

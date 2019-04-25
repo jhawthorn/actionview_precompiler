@@ -31,6 +31,26 @@ module ActionviewPrecompiler
       assert_equal [], render.locals_keys
     end
 
+    def test_finds_render_template
+      renders = parse_render_calls(%q{render template: "users/show"})
+      assert_equal 1, renders.length
+      render = renders[0]
+      assert_equal :template, render.render_type
+      assert_equal "users/show", render.template
+      assert_equal "users/show", render.virtual_path
+      assert_equal [], render.locals_keys
+    end
+
+    def test_finds_render_layout
+      renders = parse_render_calls(%q{render layout: "users/user_layout"})
+      assert_equal 1, renders.length
+      render = renders[0]
+      assert_equal :layout, render.render_type
+      assert_equal "users/user_layout", render.template
+      assert_equal "users/user_layout", render.virtual_path
+      assert_equal [], render.locals_keys
+    end
+
     def test_finds_simple_render_with_locals
       renders = parse_render_calls(%q{render "users/user", user: @user})
       assert_equal 1, renders.length
