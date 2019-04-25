@@ -60,9 +60,15 @@ module ActionviewPrecompiler
 
       @templates.each do |template|
         locals_set = @locals_sets[template.virtual_path]
-        next unless locals_set
-        locals_set.each do |locals|
-          yield template, locals
+        if locals_set
+          locals_set.each do |locals|
+            yield template, locals
+          end
+        elsif !template.partial?
+          # For now, guess that non-partials we haven't seen take no locals
+          yield template, []
+        else
+          # Locals unknown
         end
       end
     end
