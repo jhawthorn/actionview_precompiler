@@ -10,13 +10,14 @@ module ActionviewPrecompiler
   def self.precompile(verbose: false)
     target = ActionController::Base # fixme
     view_paths = target.view_paths
+    lookup_context = ActionView::LookupContext.new(view_paths)
     paths = view_paths.map(&:path)
     precompiler = Precompiler.new(paths)
 
     mod = target.view_context_class
     count = 0
     precompiler.each_lookup_args do |args|
-      templates = view_paths.find_all(*args)
+      templates = lookup_context.find_all(*args)
       templates.each do |template|
         puts "precompiling: #{template.inspect}" if verbose
         count += 1
