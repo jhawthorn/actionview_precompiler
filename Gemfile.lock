@@ -3,7 +3,7 @@ PATH
   specs:
     actionview_precompiler (0.1.0)
       actionview (>= 6.0.a)
-      parser (~> 2.6)
+      parser (~> 2.5)
 
 GEM
   remote: https://rubygems.org/
