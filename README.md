@@ -1,8 +1,17 @@
 # ActionviewPrecompiler
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/actionview_precompiler`. To experiment with that code, run `bin/console` for an interactive prompt.
+Precompiles ActionView templates at app boot.
 
-TODO: Delete this and the text above, and describe your gem
+The main challenge in precompiling these templates is determining the locals they're going to be passed.
+Without the initialization, local vars look the same as method calls, so we need to compile separate copies for each different set of local variable passed in.
+
+We determine the locals passed to each template by parsing all templates looking for render calls and extracting the local keys passed to that.
+
+Right now this assumes every template with the same `virtual_path` takes the same locals (there may be smarter options, we just aren't doing them).
+A curse/blessing/actually still a curse of this approach is that mis-predicting render calls doesn't cause any issues, it just wastes RAM.
+
+Templates are half-compiled using standard ActionView handlers, so this should work for erb/builder/haml/whatever.
+Parsing is done using [parser](https://github.com/whitequark/parser).
 
 ## Installation
 
@@ -16,13 +25,19 @@ And then execute:
 
     $ bundle install
 
-Or install it yourself as:
-
-    $ gem install actionview_precompiler
-
 ## Usage
 
-TODO: Write usage instructions here
+``` ruby
+ActionviewPrecompiler.precompile
+```
+
+## TODO
+
+* Doesn't understand (common) relative renders: `render "form"`
+* Support more `render` invocations
+* Parse controllers/helpers for more renders
+* Cache detected locals to avoid parsing cost
+* Upstream more bits to Rails
 
 ## Development
 
