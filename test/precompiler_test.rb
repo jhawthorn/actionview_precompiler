@@ -7,7 +7,7 @@ module ActionviewPrecompiler
       lookup_args = precompiler.each_lookup_args.to_a
 
       expected_details = { locale: [], variants: [], formats: [:html], handlers: [:erb] }
-      expected = ["user", "users", true, expected_details , :precompile, ["user"]]
+      expected = ["user", "users", true, ["user"], expected_details]
       assert_includes lookup_args, expected
     end
   end
