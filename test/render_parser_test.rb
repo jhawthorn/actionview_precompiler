@@ -18,6 +18,7 @@ module ActionviewPrecompiler
       assert_equal 1, renders.length
       render = renders[0]
       assert_equal "users/user", render.template
+      assert_equal "users/_user", render.virtual_path
       assert_equal [], render.locals_keys
     end
 
@@ -26,6 +27,7 @@ module ActionviewPrecompiler
       assert_equal 1, renders.length
       render = renders[0]
       assert_equal "users/user", render.template
+      assert_equal "users/_user", render.virtual_path
       assert_equal [], render.locals_keys
     end
 
@@ -33,6 +35,7 @@ module ActionviewPrecompiler
       renders = parse_render_calls(%q{render "users/user", user: @user})
       assert_equal 1, renders.length
       assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
 
@@ -40,6 +43,7 @@ module ActionviewPrecompiler
       renders = parse_render_calls(%q{render partial: "users/user", locals: { user: @user } })
       assert_equal 1, renders.length
       assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
 

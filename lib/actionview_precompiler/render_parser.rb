@@ -1,7 +1,15 @@
 require "parser/current"
 
 module ActionviewPrecompiler
-  RenderCall = Struct.new(:render_type, :template, :locals, :locals_keys)
+  RenderCall = Struct.new(:render_type, :template, :locals, :locals_keys) do
+    def virtual_path
+      if render_type == :partial
+        @virtual_path ||= template.gsub(%r{/([^/]*)\z}, '/_\1')
+      else
+        template
+      end
+    end
+  end
 
   class RenderParser
     def initialize(code)
