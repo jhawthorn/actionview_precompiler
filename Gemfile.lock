@@ -57,10 +57,10 @@ PLATFORMS
 
 DEPENDENCIES
   actionview_precompiler!
-  bundler (~> 2.1.a)
+  bundler (~> 2.0)
   minitest (~> 5.0)
   pry
   rake (~> 12.0)
 
 BUNDLED WITH
-   2.1.0.pre.1
+   2.0.1
