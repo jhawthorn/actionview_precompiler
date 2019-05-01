@@ -11,7 +11,7 @@ Right now this assumes every template with the same `virtual_path` takes the sam
 A curse/blessing/actually still a curse of this approach is that mis-predicting render calls doesn't cause any issues, it just wastes RAM.
 
 Templates are half-compiled using standard ActionView handlers, so this should work for erb/builder/haml/whatever.
-Parsing is done using [parser](https://github.com/whitequark/parser).
+Parsing is done using Ruby 2.6's `RubyVM::AbstractSyntaxTree`.
 
 ## Installation
 
