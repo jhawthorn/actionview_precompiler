@@ -28,7 +28,7 @@ module ActionviewPrecompiler
     end
 
     def parsed
-      @parsed ||= Parser::CurrentRuby.parse(compiled_source)
+      @parsed ||= RubyVM::AbstractSyntaxTree.parse(compiled_source)
     end
 
     def compiled_source
