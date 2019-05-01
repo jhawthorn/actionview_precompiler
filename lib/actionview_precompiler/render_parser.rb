@@ -1,5 +1,3 @@
-require "parser/current"
-
 module ActionviewPrecompiler
   RenderCall = Struct.new(:render_type, :template, :locals, :locals_keys) do
     def virtual_path
@@ -92,7 +90,7 @@ module ActionviewPrecompiler
           local.children[0]
         end
       else
-        locals = Parser::AST::Node.new(:hash)
+        locals = nil
         locals_keys = []
       end
 

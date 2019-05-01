@@ -21,7 +21,8 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "parser", "~> 2.5"
+  spec.required_ruby_version = ">= 2.6"
+
   spec.add_dependency "actionview", ">= 6.0.a"
 
   spec.add_development_dependency "bundler", "~> 2.0"

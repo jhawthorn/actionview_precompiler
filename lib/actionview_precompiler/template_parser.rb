@@ -1,5 +1,4 @@
 require "action_view"
-require "parser/current"
 
 module ActionviewPrecompiler
   class TemplateParser
