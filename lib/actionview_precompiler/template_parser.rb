@@ -2,6 +2,8 @@ require "action_view"
 
 module ActionviewPrecompiler
   class TemplateParser
+    include ASTParser
+
     attr_reader :filename, :basename, :handler
 
     class FakeTemplate
@@ -27,7 +29,7 @@ module ActionviewPrecompiler
     end
 
     def parsed
-      @parsed ||= RubyVM::AbstractSyntaxTree.parse(compiled_source)
+      @parsed ||= parse
     end
 
     def compiled_source

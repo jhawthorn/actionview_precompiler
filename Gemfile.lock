@@ -24,6 +24,7 @@ GEM
     concurrent-ruby (1.1.5)
     crass (1.0.4)
     erubi (1.8.0)
+    ffi (1.10.0-java)
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
     loofah (2.2.3)
@@ -34,21 +35,30 @@ GEM
     minitest (5.11.3)
     nokogiri (1.10.3)
       mini_portile2 (~> 2.4.0)
+    nokogiri (1.10.3-java)
     pry (0.12.2)
       coderay (~> 1.1.0)
       method_source (~> 0.9.0)
+    pry (0.12.2-java)
+      coderay (~> 1.1.0)
+      method_source (~> 0.9.0)
+      spoon (~> 0.0)
     rails-dom-testing (2.0.3)
       activesupport (>= 4.2.0)
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.0.4)
       loofah (~> 2.2, >= 2.2.2)
     rake (12.3.2)
+    spoon (0.0.6)
+      ffi
     thread_safe (0.3.6)
+    thread_safe (0.3.6-java)
     tzinfo (1.2.5)
       thread_safe (~> 0.1)
     zeitwerk (2.1.5)
 
 PLATFORMS
+  java
   ruby
 
 DEPENDENCIES

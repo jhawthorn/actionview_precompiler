@@ -10,9 +10,11 @@ module ActionviewPrecompiler
   end
 
   class RenderParser
+    include ASTParser
+
     def initialize(code)
       @code = code
-      @code = RubyVM::AbstractSyntaxTree.parse(code) if code.is_a?(String)
+      @code = parse(code) if code.is_a?(String)
     end
 
     def render_calls
@@ -25,18 +27,17 @@ module ActionviewPrecompiler
     private
 
     def parse_render(node)
-      node = node.children[1]
-      node = node.children
-      if (node.length == 2 || node.length == 3) && node[0].type == :STR
+      node = node.argument_nodes
+      if (node.length == 1 || node.length == 2) && node[0].string?
         # FIXME: from template vs controller
         options = {}
         options[:partial] = node[0]
-        if node.length == 3
-          return unless node[1].type == :HASH
+        if node.length == 2
+          return unless node[1].hash?
           options[:locals] = node[1]
         end
         return parse_render_from_options(options)
-      elsif node.length == 2 && node[0].type == :HASH
+      elsif node.length == 1 && node[0].hash?
         options = parse_hash_to_symbols(node[0])
         return parse_render_from_options(options)
       else
@@ -45,9 +46,7 @@ module ActionviewPrecompiler
     end
 
     def parse_hash(node)
-      return nil unless node.type == :HASH
-
-      node.children[0].children[0..-2].each_slice(2).to_h
+      node.hash? && node.to_hash
     end
 
     def parse_hash_to_symbols(node)
@@ -86,8 +85,8 @@ module ActionviewPrecompiler
         parsed_locals = parse_hash(locals)
         return nil unless parsed_locals
         locals_keys = parsed_locals.keys.map do |local|
-          return nil unless local.type == :LIT
-          local.children[0]
+          return nil unless local.symbol?
+          local.to_symbol
         end
       else
         locals = nil
@@ -98,11 +97,11 @@ module ActionviewPrecompiler
     end
 
     def parse_str(node)
-      node.children[0] if node.type == :STR && String === node.children[0]
+      node.string? && node.to_string
     end
 
     def parse_sym(node)
-      node.children[0] if node.type == :LIT && Symbol === node.children[0]
+      node.symbol? && node.to_symbol
     end
 
     def debug(message)
@@ -110,7 +109,7 @@ module ActionviewPrecompiler
     end
 
     def extract_render_nodes(node)
-      return [] unless RubyVM::AbstractSyntaxTree::Node === node
+      return [] unless node?(node)
       renders = node.children.flat_map { |c| extract_render_nodes(c) }
       if render_call?(node)
         renders << node
@@ -119,10 +118,7 @@ module ActionviewPrecompiler
     end
 
     def render_call?(node)
-      node.type == :FCALL &&
-        node.children[0] == :render &&
-        node.children[1] &&
-        node.children[1].type == :ARRAY
+      fcall?(node, :render)
     end
   end
 end
