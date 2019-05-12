@@ -20,7 +20,7 @@ module ActionviewPrecompiler
       end
 
       def inspect
-        @node.inspect
+        "#<#{self.class} #{@node.inspect}>"
       end
 
       def argument_nodes
@@ -59,6 +59,13 @@ module ActionviewPrecompiler
         children[0]
       end
 
+      def fcall_named?(name)
+        fcall? &&
+          children[0] == name &&
+          children[1] &&
+          children[1].array?
+      end
+
       private
 
       def type
@@ -75,9 +82,7 @@ module ActionviewPrecompiler
     end
 
     def fcall?(node, name)
-      node.fcall? &&
-        node.children[0] == name &&
-        node.children[1] && node.children[1].array?
+      node.fcall_named?(name)
     end
   end
 end

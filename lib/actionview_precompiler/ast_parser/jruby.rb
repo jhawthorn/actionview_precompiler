@@ -1,80 +1,68 @@
 module ActionviewPrecompiler
   module ASTParser
-    class org::jruby::ast::Node
-      alias children child_nodes
-      alias type node_type
-
-      def array?; false; end
-      def hash?; false; end
-      def fcall?; false; end
-      def string?; false; end
-      def symbol?; false; end
-    end
-
-    class org::jruby::ast::ArrayNode
-      def array?
-        true
+    class Node
+      def self.wrap(node)
+        if org::jruby::ast::Node === node
+          new(node)
+        else
+          node
+        end
       end
-    end
 
-    class org::jruby::ast::FCallNode
+      def initialize(node)
+        @node = node
+      end
+
+      def children
+        @children ||= @node.child_nodes.map do |child|
+          self.class.wrap(child)
+        end
+      end
+
+      def array?;  org::jruby::ast::ArrayNode  === @node; end
+      def fcall?;  org::jruby::ast::FCallNode  === @node; end
+      def hash?;   org::jruby::ast::HashNode   === @node; end
+      def string?; org::jruby::ast::StrNode    === @node; end
+      def symbol?; org::jruby::ast::SymbolNode === @node; end
+
       def argument_nodes
-        args_node.to_a[0...args_node.size]
-      end
-
-      def fcall?
-        true
-      end
-    end
-
-    class org::jruby::ast::HashNode
-      def hash?
-        true
-      end
-
-      def keys
-        @keys ||= pairs.map { |k, v| v }
+        @node.args_node.to_a[0...@node.args_node.size].map do |arg|
+          self.class.wrap(arg)
+        end
       end
 
       def to_hash
-        pairs.each_with_object({}) do |pair, object|
-          object[pair.key] = pair.value
+        @node.pairs.each_with_object({}) do |pair, object|
+          object[self.class.wrap(pair.key)] = self.class.wrap(pair.value)
         end
-      end
-    end
-
-    class org::jruby::ast::StrNode
-      def string?
-        true
       end
 
       def to_string
-        value
-      end
-    end
-
-    class org::jruby::ast::SymbolNode
-      def symbol?
-        true
+        @node.value
       end
 
       def to_symbol
-        name
+        @node.name
+      end
+
+      def fcall_named?(name)
+        fcall? &&
+          @node.name == name &&
+          @node.args_node &&
+          org::jruby::ast::ArrayNode === @node.args_node
       end
     end
 
     def parse(code)
-      JRuby.parse(code)
+      Node.wrap(JRuby.parse(code))
     end
 
     def node?(node)
-      org.jruby.ast.Node === node
+      Node === node
     end
 
     def fcall?(node, name)
-      node.fcall? &&
-        node.name == name &&
-        node.args_node && node.args_node.array?
+      node.fcall_named?(name)
     end
   end
 end
