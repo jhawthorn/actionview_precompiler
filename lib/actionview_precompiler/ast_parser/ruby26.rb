@@ -38,7 +38,7 @@ module ActionviewPrecompiler
       end
     end
 
-    def parse(code = compiled_source)
+    def parse(code)
       RubyVM::AbstractSyntaxTree.parse(code)
     end
 

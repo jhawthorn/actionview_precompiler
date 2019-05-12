@@ -63,7 +63,7 @@ module ActionviewPrecompiler
       end
     end
 
-    def parse(code = compiled_source)
+    def parse(code)
       JRuby.parse(code)
     end
 

@@ -29,7 +29,7 @@ module ActionviewPrecompiler
     end
 
     def parsed
-      @parsed ||= parse
+      @parsed ||= parse(compiled_source)
     end
 
     def compiled_source
