@@ -1,6 +1,28 @@
 module ActionviewPrecompiler
   module ASTParser
-    class RubyVM::AbstractSyntaxTree::Node
+    class Node
+      def self.wrap(node)
+        if RubyVM::AbstractSyntaxTree::Node === node
+          new(node)
+        else
+          node
+        end
+      end
+
+      def initialize(node)
+        @node = node
+      end
+
+      def children
+        @children ||= @node.children.map do |child|
+          self.class.wrap(child)
+        end
+      end
+
+      def inspect
+        @node.inspect
+      end
+
       def argument_nodes
         children[1].children[0...-1]
       end
@@ -36,14 +58,20 @@ module ActionviewPrecompiler
       def to_symbol
         children[0]
       end
+
+      private
+
+      def type
+        @node.type
+      end
     end
 
     def parse(code)
-      RubyVM::AbstractSyntaxTree.parse(code)
+      Node.wrap(RubyVM::AbstractSyntaxTree.parse(code))
     end
 
     def node?(node)
-      RubyVM::AbstractSyntaxTree::Node === node
+      Node === node
     end
 
     def fcall?(node, name)
