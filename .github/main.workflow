@@ -1,6 +1,6 @@
-workflow "New workflow" {
+workflow "Run tests on push" {
   on = "push"
-  resolves = ["Test MRI", "Test jRuby"]
+  resolves = ["Test MRI", "Test JRuby"]
 }
 
 action "Test MRI" {
@@ -8,7 +8,7 @@ action "Test MRI" {
   runs = ["sh", "-c", "bundle install -j8 && bundle exec rake test"]
 }
 
-action "Test jRuby" {
+action "Test JRuby" {
   uses = "docker://jruby"
   runs = ["sh", "-c", "bundle install -j8 && bundle exec rake test"]
 }
