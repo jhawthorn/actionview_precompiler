@@ -2,11 +2,11 @@ name: Test
 
 on: [push]
 
-strategy:
-  matrix:
-    container: [ruby, jruby]
 jobs:
   ruby:
+    strategy:
+      matrix:
+        container: [ruby, jruby]
     runs-on: ubuntu-latest
     name: Test on ${{ matrix.container }}
     container: docker://${{ matrix.container }}
