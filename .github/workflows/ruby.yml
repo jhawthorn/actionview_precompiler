@@ -2,11 +2,14 @@ name: Test
 
 on: [push]
 
+strategy:
+  matrix:
+    container: [ruby, jruby]
 jobs:
   ruby:
     runs-on: ubuntu-latest
-    name: Ruby
-    container: ruby
+    name: Test on ${{ matrix.container }}
+    container: docker://${{ matrix.container }}
     steps:
     - uses: actions/checkout@master
     - name: Run tests
