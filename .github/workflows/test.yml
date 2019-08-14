@@ -12,7 +12,9 @@ jobs:
     container: docker://${{ matrix.container }}
     steps:
     - uses: actions/checkout@master
-    - name: Run tests
+    - name: Install dependencies
       run: |
         bundle install --jobs 4 --retry 3
+    - name: Run tests
+      run: |
         bundle exec rake
