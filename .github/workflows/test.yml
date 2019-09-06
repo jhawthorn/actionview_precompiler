@@ -14,6 +14,7 @@ jobs:
     - uses: actions/checkout@master
     - name: Install dependencies
       run: |
+        gem i bundler
         bundle install --jobs 4 --retry 3
     - name: Run tests
       run: |
