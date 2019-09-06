@@ -7,6 +7,10 @@ module ActionviewPrecompiler
     attr_reader :filename, :basename, :handler
 
     class FakeTemplate
+      def identifier
+        "fake_template"
+      end
+
       def type
         nil
       end
