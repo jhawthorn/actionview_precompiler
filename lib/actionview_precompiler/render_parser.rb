@@ -61,7 +61,7 @@ module ActionviewPrecompiler
 
     RENDER_TYPE_KEYS = [:partial, :template, :layout]
     IGNORED_KEYS = [:formats]
-    ALL_KNOWN_KEYS = [*RENDER_TYPE_KEYS, *IGNORED_KEYS, :locals]
+    ALL_KNOWN_KEYS = [*RENDER_TYPE_KEYS, *IGNORED_KEYS, :locals, :object]
 
     def parse_render_from_options(options_hash)
       keys = options_hash.keys
@@ -80,7 +80,16 @@ module ActionviewPrecompiler
       template = parse_str(options_hash[render_type])
       return unless template
 
-      if options_hash.key?(:locals)
+      if options_hash.key?(:object)
+        return nil if options_hash.key?(:locals)
+        return nil unless options_hash.key?(:partial)
+
+        base = File.basename(template)
+        return nil unless base =~ /\A_?(.*?)(?:\.\w+)*\z/
+
+        locals = nil
+        locals_keys = [$1.to_sym]
+      elsif options_hash.key?(:locals)
         locals = options_hash[:locals]
         parsed_locals = parse_hash(locals)
         return nil unless parsed_locals

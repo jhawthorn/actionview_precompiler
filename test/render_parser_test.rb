@@ -67,6 +67,14 @@ module ActionviewPrecompiler
       assert_equal [:user], renders[0].locals_keys
     end
 
+    def test_render_with_object
+      renders = parse_render_calls(%q{render partial: "users/user", object: @user })
+      assert_equal 1, renders.length
+      assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [:user], renders[0].locals_keys
+    end
+
     private
 
     def parse_render_calls(code)
