@@ -61,7 +61,7 @@ module ActionviewPrecompiler
 
     RENDER_TYPE_KEYS = [:partial, :template, :layout]
     IGNORED_KEYS = [:formats]
-    ALL_KNOWN_KEYS = [*RENDER_TYPE_KEYS, *IGNORED_KEYS, :locals, :object]
+    ALL_KNOWN_KEYS = [*RENDER_TYPE_KEYS, *IGNORED_KEYS, :locals, :object, :collection, :as]
 
     def parse_render_from_options(options_hash)
       keys = options_hash.keys
@@ -80,16 +80,7 @@ module ActionviewPrecompiler
       template = parse_str(options_hash[render_type])
       return unless template
 
-      if options_hash.key?(:object)
-        return nil if options_hash.key?(:locals)
-        return nil unless options_hash.key?(:partial)
-
-        base = File.basename(template)
-        return nil unless base =~ /\A_?(.*?)(?:\.\w+)*\z/
-
-        locals = nil
-        locals_keys = [$1.to_sym]
-      elsif options_hash.key?(:locals)
+      if options_hash.key?(:locals)
         locals = options_hash[:locals]
         parsed_locals = parse_hash(locals)
         return nil unless parsed_locals
@@ -100,6 +91,25 @@ module ActionviewPrecompiler
       else
         locals = nil
         locals_keys = []
+      end
+
+      if options_hash.key?(:object) || options_hash.key?(:collection)
+        return nil if options_hash.key?(:object) && options_hash.key?(:collection)
+        return nil unless options_hash.key?(:partial)
+
+        as = if options_hash.key?(:as)
+               parse_str(options_hash[:as]) || parse_sym(options_hash[:as])
+             elsif File.basename(template) =~ /\A_?(.*?)(?:\.\w+)*\z/
+               $1
+             end
+
+        return nil unless as
+
+        locals_keys << as.to_sym
+        if options_hash.key?(:collection)
+          locals_keys << :"#{as}_counter"
+          locals_keys << :"#{as}_iteration"
+        end
       end
 
       RenderCall.new(render_type, template, locals, locals_keys)

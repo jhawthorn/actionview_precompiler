@@ -67,12 +67,52 @@ module ActionviewPrecompiler
       assert_equal [:user], renders[0].locals_keys
     end
 
-    def test_render_with_object
+    def test_render_object
       renders = parse_render_calls(%q{render partial: "users/user", object: @user })
       assert_equal 1, renders.length
       assert_equal "users/user", renders[0].template
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
+    end
+
+    def test_render_object_as
+      renders = parse_render_calls(%q{render partial: "users/user", object: @user, as: :customer })
+      assert_equal 1, renders.length
+      assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [:customer], renders[0].locals_keys
+    end
+
+    def test_render_object_and_locals
+      renders = parse_render_calls(%q{render partial: "users/user", object: @user, locals: { admin: true } })
+      assert_equal 1, renders.length
+      assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [:admin, :user], renders[0].locals_keys
+    end
+
+    def test_render_collection
+      renders = parse_render_calls(%q{render partial: "users/user", collection: @users })
+      assert_equal 1, renders.length
+      assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [:user, :user_counter, :user_iteration], renders[0].locals_keys
+    end
+
+    def test_render_collection_as
+      renders = parse_render_calls(%q{render partial: "users/user", collection: @users, as: :customer })
+      assert_equal 1, renders.length
+      assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [:customer, :customer_counter, :customer_iteration], renders[0].locals_keys
+    end
+
+    def test_render_collection_and_locals
+      renders = parse_render_calls(%q{render partial: "users/user", collection: @users, locals: { admin: true } })
+      assert_equal 1, renders.length
+      assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [:admin, :user, :user_counter, :user_iteration], renders[0].locals_keys
     end
 
     private
