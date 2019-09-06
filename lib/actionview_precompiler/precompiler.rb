@@ -78,8 +78,14 @@ module ActionviewPrecompiler
       @templates.each do |template|
         parser = TemplateParser.new(template.fullpath)
         parser.render_calls.each do |render_call|
-          @locals_sets[render_call.virtual_path] ||= []
-          @locals_sets[render_call.virtual_path] << render_call.locals_keys.map(&:to_s).sort
+          virtual_path = render_call.virtual_path
+          unless virtual_path.include?("/")
+            # Not necessarily true, since the perfix is based on the current
+            # controller, but is a safe bet most of the time.
+            virtual_path = "#{template.prefix}/#{virtual_path}"
+          end
+          @locals_sets[virtual_path] ||= []
+          @locals_sets[virtual_path] << render_call.locals_keys.map(&:to_s).sort
         end
       end
 
