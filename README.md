@@ -1,6 +1,27 @@
 # ActionviewPrecompiler
 
-Precompiles ActionView templates at app boot.
+Provides eager loading of ActionView templates.
+
+This optimization aims to improve cold render times and to allow more memory to be shared via CoW on forking web servers.
+
+For more information see:
+
+* https://www.johnhawthorn.com/2019/09/precompiling-rails-templates/
+* Aaron Patterson's [RailsConf 2019 Keynote](https://www.youtube.com/watch?v=8Dld5kFWGCc)
+* John Hawthorn's ["Parsing and Rewriting Ruby Templates" (slides)](https://www.slideshare.net/JohnHawthorn4/parsing-and-rewriting-ruby-templates)
+
+## Should I use this?
+
+You probably don't need to.
+
+This gem provides a place to test out an optimization we hope to eventually include in Rails where everyone can gain this benefit without any additional work or configuration :hugs:.
+Right now I would love help validating that it (at least somewhat) accurately detects rendered views in your application :heart:.
+
+That said, it shows [promising results](https://www.johnhawthorn.com/2019/09/precompiling-rails-templates/) today :chart_with_downwards_trend: so if you've measured that view compilation is an issue this should help! Please let me know!
+
+The most likely downside of using this is that if this mispredicts render calls it will waste a little memory (somewhat ironically, since one goal is to save memory).
+
+## How it works
 
 The main challenge in precompiling these templates is determining the locals they're going to be passed.
 Without the initialization, local vars look the same as method calls, so we need to compile separate copies for each different set of local variable passed in.
@@ -27,13 +48,21 @@ And then execute:
 
 ## Usage
 
+To precompile views on app boot, create an initializer to perform precompilation
+
 ``` ruby
+# config/initializers/actionview_precompiler.rb
 ActionviewPrecompiler.precompile
+```
+
+It can also be run in verbose mode, which I use to tell which views it has detected. I usually run this in a console
+
+``` ruby
+ActionviewPrecompiler.precompile(verbose: true)
 ```
 
 ## TODO
 
-* Doesn't understand (common) relative renders: `render "form"`
 * Support more `render` invocations
 * Parse controllers/helpers for more renders
 * Cache detected locals to avoid parsing cost
