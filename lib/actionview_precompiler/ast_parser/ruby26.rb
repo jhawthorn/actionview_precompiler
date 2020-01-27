@@ -28,7 +28,7 @@ module ActionviewPrecompiler
       end
 
       def array?
-        type == :ARRAY
+        type == :ARRAY || type == :LIST
       end
 
       def fcall?
