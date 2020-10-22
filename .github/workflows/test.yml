@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        container: [ruby, jruby]
+        container: [ruby:2.6, ruby:2.7, ruby:3.0-rc, jruby]
     runs-on: ubuntu-latest
     name: Test on ${{ matrix.container }}
     container: docker://${{ matrix.container }}
