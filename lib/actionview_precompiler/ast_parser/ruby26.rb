@@ -48,7 +48,12 @@ module ActionviewPrecompiler
       end
 
       def to_hash
-        children[0].children[0..-2].each_slice(2).to_h
+        list = children[0]
+        if list.nil?
+          {}
+        else
+          list.children[0..-2].each_slice(2).to_h
+        end
       end
 
       def to_string

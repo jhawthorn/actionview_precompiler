@@ -59,6 +59,14 @@ module ActionviewPrecompiler
       assert_equal [:user], renders[0].locals_keys
     end
 
+    def test_finds_simple_render_hash_with_empty_locals
+      renders = parse_render_calls(%q{render partial: "users/user", locals: { } })
+      assert_equal 1, renders.length
+      assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [], renders[0].locals_keys
+    end
+
     def test_finds_simple_render_hash_with_locals
       renders = parse_render_calls(%q{render partial: "users/user", locals: { user: @user } })
       assert_equal 1, renders.length
