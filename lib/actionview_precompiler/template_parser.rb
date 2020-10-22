@@ -14,6 +14,10 @@ module ActionviewPrecompiler
       def type
         nil
       end
+
+      def format
+        nil
+      end
     end
 
     def initialize(filename)
