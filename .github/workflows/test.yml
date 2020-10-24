@@ -7,13 +7,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        container: ["ruby:2.6", "ruby:2.7", "ruby:3.0-rc", "jruby"]
+        ruby_version: ["2.6", "2.7", "head", "jruby"]
         rails_version: ["master", "6-0-stable"]
     runs-on: ubuntu-latest
-    name: Test on ${{ matrix.container }} with Rails ${{ matrix.rails_version }}
-    container: docker://${{ matrix.container }}
+    name: Test on ${{ matrix.ruby_version }} with Rails ${{ matrix.rails_version }}
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: ${{ matrix.ruby_version }}
     - name: Install dependencies
       run: |
         gem update --system
