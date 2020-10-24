@@ -8,8 +8,9 @@ jobs:
       fail-fast: false
       matrix:
         container: ["ruby:2.6", "ruby:2.7", "ruby:3.0-rc", "jruby"]
+        rails_version: ["master", "6-0-stable"]
     runs-on: ubuntu-latest
-    name: Test on ${{ matrix.container }}
+    name: Test on ${{ matrix.container }} with Rails ${{ matrix.rails_version }}
     container: docker://${{ matrix.container }}
     steps:
     - uses: actions/checkout@master
@@ -18,6 +19,10 @@ jobs:
         gem update --system
         gem i bundler
         bundle install --jobs 4 --retry 3
+      env:
+        RAILS_VERSION: ${{ matrix.rails_version }}
     - name: Run tests
       run: |
         bundle exec rake
+      env:
+        RAILS_VERSION: ${{ matrix.rails_version }}
