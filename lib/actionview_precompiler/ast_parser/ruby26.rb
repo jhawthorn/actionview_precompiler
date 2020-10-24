@@ -99,5 +99,18 @@ module ActionviewPrecompiler
     def fcall?(node, name)
       node.fcall_named?(name)
     end
+
+    def extract_render_nodes(node)
+      return [] unless node?(node)
+      renders = node.children.flat_map { |c| extract_render_nodes(c) }
+      if render_call?(node)
+        renders << node
+      end
+      renders
+    end
+
+    def render_call?(node)
+      fcall?(node, :render)
+    end
   end
 end
