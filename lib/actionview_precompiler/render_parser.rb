@@ -52,8 +52,8 @@ module ActionviewPrecompiler
     def parse_hash_to_symbols(node)
       hash = parse_hash(node)
       return unless hash
-      hash.transform_keys do |node|
-        key = parse_sym(node)
+      hash.transform_keys do |key_node|
+        key = parse_sym(key_node)
         return unless key
         key
       end
