@@ -32,9 +32,6 @@ module ActionviewPrecompiler
           locals_set.each do |locals|
             yield template, locals
           end
-        elsif !template.partial?
-          # For now, guess that non-partials we haven't seen take no locals
-          yield template, []
         else
           # Locals unknown
         end
