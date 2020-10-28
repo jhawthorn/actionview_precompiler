@@ -24,7 +24,13 @@ module ActionviewPrecompiler
       end
 
       def argument_nodes
-        children[1].children[0...-1]
+        if children[1].array?
+          children[1].children[0...-1]
+        elsif children[1].block_pass?
+          children[1].children[0].children[0...-1]
+        else
+          raise "can't call argument_nodes on #{inspect}"
+        end
       end
 
       def array?
@@ -37,6 +43,10 @@ module ActionviewPrecompiler
 
       def hash?
         type == :HASH
+      end
+
+      def block_pass?
+        type == :BLOCK_PASS
       end
 
       def string?
@@ -68,7 +78,7 @@ module ActionviewPrecompiler
         fcall? &&
           children[0] == name &&
           children[1] &&
-          children[1].array?
+          (children[1].array? || (children[1].block_pass? && children[1].children[0].array?))
       end
 
       private
