@@ -24,7 +24,7 @@ module ActionviewPrecompiler
 
       @locals_sets = {}
 
-      @templates.each do |template|
+      templates.each do |template|
         parser = TemplateParser.new(template.fullpath)
         parser.render_calls.each do |render_call|
           virtual_path = render_call.virtual_path
