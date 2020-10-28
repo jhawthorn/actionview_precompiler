@@ -24,7 +24,7 @@ module ActionviewPrecompiler
       @filename = filename
       @basename = File.basename(filename)
       handler_ext = @basename.split(".").last
-      @handler = ActionView::Template.handler_for_extension(handler_ext)
+      @handler = HANDLERS_FOR_EXTENSION[handler_ext]
       @is_partial = !!@basename.start_with?("_")
     end
 
