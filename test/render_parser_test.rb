@@ -47,7 +47,30 @@ module ActionviewPrecompiler
       render = renders[0]
       assert_equal :layout, render.render_type
       assert_equal "users/user_layout", render.template
-      assert_equal "users/user_layout", render.virtual_path
+      assert_equal "users/_user_layout", render.virtual_path
+      assert_equal [], render.locals_keys
+    end
+
+    def test_finds_render_layout_with_block
+      renders = parse_render_calls(<<~RUBY)
+        render layout: "users/user_layout" do
+        end
+      RUBY
+      assert_equal 1, renders.length
+      render = renders[0]
+      assert_equal :layout, render.render_type
+      assert_equal "users/user_layout", render.template
+      assert_equal "users/_user_layout", render.virtual_path
+      assert_equal [], render.locals_keys
+    end
+
+    def test_finds_render_layout_with_ampersand_proc
+      renders = parse_render_calls(%q{render layout: "users/user_layout", &my_proc})
+      assert_equal 1, renders.length
+      render = renders[0]
+      assert_equal :layout, render.render_type
+      assert_equal "users/user_layout", render.template
+      assert_equal "users/_user_layout", render.virtual_path
       assert_equal [], render.locals_keys
     end
 

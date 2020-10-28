@@ -1,7 +1,7 @@
 module ActionviewPrecompiler
   RenderCall = Struct.new(:render_type, :template, :locals, :locals_keys) do
     def virtual_path
-      if render_type == :partial
+      if render_type == :partial || render_type == :layout
         @virtual_path ||= template.gsub(%r{(/|^)([^/]*)\z}, '\1_\2')
       else
         template
