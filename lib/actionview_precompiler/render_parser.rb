@@ -14,7 +14,6 @@ module ActionviewPrecompiler
 
     def initialize(code)
       @code = code
-      @code = parse(code) if code.is_a?(String)
     end
 
     def render_calls

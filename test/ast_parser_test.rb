@@ -4,14 +4,14 @@ module ActionviewPrecompiler
   class ASTParserTest < Minitest::Test
     include ASTParser
 
-    def test_can_parse_this_file
-      node = parse(File.read(__FILE__))
-      assert node?(node)
+    def test_can_parse_render
+      code = 'render "foo/bar"'
+      assert extract_render_nodes(code).size == 1
     end
 
-    def test_can_parse_render
-      node = parse('render "foo/bar"')
-      assert node?(node)
+    def test_can_parse_render_parens
+      code = 'render("foo/bar")'
+      assert extract_render_nodes(code).size == 1
     end
   end
 end

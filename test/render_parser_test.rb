@@ -31,6 +31,15 @@ module ActionviewPrecompiler
       assert_equal [], render.locals_keys
     end
 
+    def test_finds_simple_render_hash_explicit
+      renders = parse_render_calls(%q{render({partial: "users/user"})})
+      assert_equal 1, renders.length
+      render = renders[0]
+      assert_equal "users/user", render.template
+      assert_equal "users/_user", render.virtual_path
+      assert_equal [], render.locals_keys
+    end
+
     def test_finds_render_template
       renders = parse_render_calls(%q{render template: "users/show"})
       assert_equal 1, renders.length

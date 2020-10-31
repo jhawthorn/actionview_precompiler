@@ -2,8 +2,6 @@ require "action_view"
 
 module ActionviewPrecompiler
   class TemplateParser
-    include ASTParser
-
     attr_reader :filename, :basename, :handler
 
     class FakeTemplate
@@ -33,11 +31,7 @@ module ActionviewPrecompiler
     end
 
     def render_calls
-      RenderParser.new(parsed).render_calls
-    end
-
-    def parsed
-      @parsed ||= parse(compiled_source)
+      RenderParser.new(compiled_source).render_calls
     end
 
     def compiled_source
