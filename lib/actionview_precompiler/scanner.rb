@@ -10,7 +10,7 @@ module ActionviewPrecompiler
     def templates
       @templates ||=
         @view_dirs.flat_map do |view_dir|
-          Dir["**/*", base: view_dir].map do |file|
+          Dir["**/*", base: view_dir].sort.map do |file|
             fullpath = File.expand_path(file, view_dir)
             next if File.directory?(fullpath)
 
