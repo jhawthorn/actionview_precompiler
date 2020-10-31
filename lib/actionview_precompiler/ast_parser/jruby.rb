@@ -1,5 +1,5 @@
 module ActionviewPrecompiler
-  module ASTParser
+  module JRubyASTParser
     class Node
       def self.wrap(node)
         if org::jruby::ast::Node === node

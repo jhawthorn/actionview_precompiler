@@ -3,7 +3,7 @@
 require "ripper"
 
 module ActionviewPrecompiler
-  module ASTParser
+  module RipperASTParser
     class Node < ::Array
       attr_reader :type
 

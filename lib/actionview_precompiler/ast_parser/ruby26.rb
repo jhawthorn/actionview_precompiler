@@ -1,5 +1,5 @@
 module ActionviewPrecompiler
-  module ASTParser
+  module Ruby26ASTParser
     class Node
       def self.wrap(node)
         if RubyVM::AbstractSyntaxTree::Node === node
