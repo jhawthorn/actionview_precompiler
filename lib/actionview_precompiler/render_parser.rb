@@ -10,14 +10,12 @@ module ActionviewPrecompiler
   end
 
   class RenderParser
-    include ASTParser
-
     def initialize(code)
       @code = code
     end
 
     def render_calls
-      render_nodes = parse_render_nodes(@code)
+      render_nodes = ASTParser.parse_render_nodes(@code)
       render_nodes.map do |node|
         parse_render(node)
       end.compact

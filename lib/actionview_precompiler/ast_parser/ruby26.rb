@@ -88,6 +88,8 @@ module ActionviewPrecompiler
       end
     end
 
+    extend self
+
     def parse_render_nodes(code)
       extract_render_nodes(parse(code))
     end
