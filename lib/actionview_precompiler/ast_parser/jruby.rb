@@ -53,8 +53,11 @@ module ActionviewPrecompiler
       end
     end
 
-    def parse(code)
-      Node.wrap(JRuby.parse(code))
+    extend self
+
+    def parse_render_nodes(code)
+      node = Node.wrap(JRuby.parse(code))
+      extract_render_nodes(node)
     end
 
     def node?(node)

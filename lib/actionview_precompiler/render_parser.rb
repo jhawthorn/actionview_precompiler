@@ -17,7 +17,7 @@ module ActionviewPrecompiler
     end
 
     def render_calls
-      render_nodes = extract_render_nodes(@code)
+      render_nodes = parse_render_nodes(@code)
       render_nodes.map do |node|
         parse_render(node)
       end.compact

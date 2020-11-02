@@ -88,6 +88,10 @@ module ActionviewPrecompiler
       end
     end
 
+    def parse_render_nodes(code)
+      extract_render_nodes(parse(code))
+    end
+
     def parse(code)
       Node.wrap(RubyVM::AbstractSyntaxTree.parse(code))
     end

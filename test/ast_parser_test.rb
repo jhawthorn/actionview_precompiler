@@ -6,12 +6,12 @@ module ActionviewPrecompiler
 
     def test_can_parse_render
       code = 'render "foo/bar"'
-      assert extract_render_nodes(code).size == 1
+      assert parse_render_nodes(code).size == 1
     end
 
     def test_can_parse_render_parens
       code = 'render("foo/bar")'
-      assert extract_render_nodes(code).size == 1
+      assert parse_render_nodes(code).size == 1
     end
   end
 end
