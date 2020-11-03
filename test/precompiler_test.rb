@@ -12,8 +12,20 @@ module ActionviewPrecompiler
     end
 
     def test_precompiler_run
+      reset_action_view!
+
       precompiler = Precompiler.new([FIXTURES_DIR])
-      precompiler.run
+
+      compiled_templates = []
+      callback = ->(name, start, finish, id, payload) do
+        compiled_templates << payload[:virtual_path]
+      end
+      ActiveSupport::Notifications.subscribed(callback, "!compile_template.action_view") do
+        precompiler.run
+      end
+
+      # Make sure we find and compile users/_user
+      assert_includes compiled_templates, "users/_user"
     end
   end
 end
