@@ -1,5 +1,5 @@
 module ActionviewPrecompiler
-  RenderCall = Struct.new(:render_type, :template, :locals, :locals_keys) do
+  RenderCall = Struct.new(:render_type, :template, :locals_keys) do
     def virtual_path
       if render_type == :partial || render_type == :layout
         @virtual_path ||= template.gsub(%r{(/|^)([^/]*)\z}, '\1_\2')
@@ -111,7 +111,7 @@ module ActionviewPrecompiler
         end
       end
 
-      RenderCall.new(render_type, template, locals, locals_keys)
+      RenderCall.new(render_type, template, locals_keys)
     end
 
     def parse_str(node)
