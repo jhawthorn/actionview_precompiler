@@ -23,11 +23,6 @@ module ActionviewPrecompiler
       @basename = File.basename(filename)
       handler_ext = @basename.split(".").last
       @handler = HANDLERS_FOR_EXTENSION[handler_ext]
-      @is_partial = !!@basename.start_with?("_")
-    end
-
-    def partial?
-      @is_partial
     end
 
     def render_calls

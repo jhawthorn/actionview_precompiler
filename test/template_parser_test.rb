@@ -5,7 +5,6 @@ module ActionviewPrecompiler
     def test_parsing_template
       template = parse_template("users/show.html.erb")
       assert_equal "show.html.erb", template.basename
-      refute template.partial?
       assert_kind_of ActionView::Template::Handlers::ERB, template.handler
       renders =  template.render_calls
       assert_equal 1, renders.length
@@ -17,7 +16,6 @@ module ActionviewPrecompiler
     def test_parsing_partial
       template = parse_template("users/_user.html.erb")
       assert_equal "_user.html.erb", template.basename
-      assert template.partial?
       assert_kind_of ActionView::Template::Handlers::ERB, template.handler
       assert_equal [], template.render_calls
     end
@@ -25,7 +23,6 @@ module ActionviewPrecompiler
     def test_parsing_ruby_template
       template = parse_template("users/plain_rubby.html.ruby")
       assert_equal "plain_rubby.html.ruby", template.basename
-      refute template.partial?
       renders =  template.render_calls
       assert_equal 1, renders.length
       assert_equal :partial, renders[0].render_type
