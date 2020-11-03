@@ -1,7 +1,7 @@
 require "test_helper"
 
 module ActionviewPrecompiler
-  class RenderParserTest < Minitest::Test
+  module RenderParserTests
     def test_finds_no_renders
       assert_equal [], parse_render_calls("x = x = 1 + 1")
     end
@@ -158,7 +158,32 @@ module ActionviewPrecompiler
     private
 
     def parse_render_calls(code)
-      RenderParser.new(code).render_calls
+      RenderParser.new(code, parser: self.class::Parser).render_calls
+    end
+  end
+
+  class RipperASTRenderParserTest < Minitest::Test
+    include RenderParserTests
+
+    require "actionview_precompiler/ast_parser/ripper"
+    Parser = RipperASTParser
+  end
+
+  if RUBY_ENGINE == "ruby"
+    class RubyASTRenderParserTest < Minitest::Test
+      include RenderParserTests
+
+      require "actionview_precompiler/ast_parser/ruby26"
+      Parser = Ruby26ASTParser
+    end
+  end
+
+  if RUBY_ENGINE == "jruby"
+    class JRubyASTRenderParserTest < Minitest::Test
+      include RenderParserTests
+
+      require "actionview_precompiler/ast_parser/jruby"
+      Parser = JRubyASTParser
     end
   end
 end
