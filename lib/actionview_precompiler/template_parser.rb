@@ -31,11 +31,13 @@ module ActionviewPrecompiler
     end
 
     def render_calls
-      RenderParser.new(compiled_source).render_calls
-    end
-
-    def compiled_source
-      @handler.call(FakeTemplate.new, File.read(@filename))
+      src = File.read(@filename)
+      if src.include?("render")
+        compiled_source = @handler.call(FakeTemplate.new, File.read(@filename))
+        RenderParser.new(compiled_source).render_calls
+      else
+        []
+      end
     end
   end
 end
