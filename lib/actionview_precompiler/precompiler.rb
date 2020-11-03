@@ -1,26 +1,28 @@
 require "actionview_precompiler/scanner"
+require "actionview_precompiler/template_loader"
 
 module ActionviewPrecompiler
   class Precompiler
-    def initialize(view_dirs)
+    def initialize(view_dirs, verbose: false)
       @scanner = Scanner.new(view_dirs)
+      @loader = TemplateLoader.new
+      @verbose = verbose
     end
 
-    def each_lookup_args
-      return enum_for(__method__) unless block_given?
-
+    def run
+      count = 0
       each_template_render do |template, locals|
-        details = {
-          locale: Array(template.details[:locale]),
-          variants: Array(template.details[:variant]),
-          formats: Array(template.details[:format]),
-          handlers: Array(template.details[:handler])
-        }
+        debug "precompiling: #{template.inspect}"
+        count += 1
 
-        yield [template.action, template.prefix, template.partial?, locals, details]
+        @loader.load_template(template, locals)
       end
 
-      nil
+      debug "Precompiled #{count} Templates"
+    end
+
+    def debug(msg)
+      puts msg if @verbose
     end
 
     def each_template_render
