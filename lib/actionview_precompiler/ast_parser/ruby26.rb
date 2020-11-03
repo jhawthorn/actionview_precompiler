@@ -62,7 +62,9 @@ module ActionviewPrecompiler
         if list.nil?
           {}
         else
-          list.children[0..-2].each_slice(2).to_h
+          hash = list.children[0..-2].each_slice(2).to_h
+          return nil if hash.key?(nil)
+          hash
         end
       end
 

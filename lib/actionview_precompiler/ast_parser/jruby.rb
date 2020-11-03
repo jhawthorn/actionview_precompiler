@@ -33,6 +33,7 @@ module ActionviewPrecompiler
 
       def to_hash
         @node.pairs.each_with_object({}) do |pair, object|
+          return nil if pair.key == nil
           object[self.class.wrap(pair.key)] = self.class.wrap(pair.value)
         end
       end

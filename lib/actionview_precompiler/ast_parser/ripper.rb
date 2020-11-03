@@ -54,14 +54,22 @@ module ActionviewPrecompiler
 
       def to_hash
         if type == :bare_assoc_hash
-          self[0].map(&:to_a).to_h
+          hash_from_body(self[0])
         elsif type == :hash && self[0] == nil
           {}
         elsif type == :hash && self[0].type == :assoclist_from_args
-          self[0][0].map(&:to_a).to_h
+          hash_from_body(self[0][0])
         else
           raise "not a hash? #{inspect}"
         end
+      end
+
+      def hash_from_body(body)
+        body.map do |hash_node|
+          return nil if hash_node.type != :assoc_new
+
+          [hash_node[0], hash_node[1]]
+        end.to_h
       end
 
       def symbol?

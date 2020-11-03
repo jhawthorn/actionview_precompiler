@@ -11,6 +11,11 @@ module ActionviewPrecompiler
       assert_equal [], parse_render_calls(%q{render(123)})
       assert_equal [], parse_render_calls(%q{render("foo", 123)})
       assert_equal [], parse_render_calls(%q{render("foo", {}, {})})
+      assert_equal [], parse_render_calls(%q{render("foo", locals)})
+      assert_equal [], parse_render_calls(%q{render("foo", **locals)})
+      assert_equal [], parse_render_calls(%q{render("foo", { **locals })})
+      assert_equal [], parse_render_calls(%q{render("foo", name: "John", **locals)})
+      assert_equal [], parse_render_calls(%q{render(partial: "foo", **options)})
     end
 
     def test_finds_simple_render

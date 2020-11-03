@@ -37,6 +37,7 @@ module ActionviewPrecompiler
         return parse_render_from_options(options)
       elsif node.length == 1 && node[0].hash?
         options = parse_hash_to_symbols(node[0])
+        return nil unless options
         return parse_render_from_options(options)
       else
         nil
