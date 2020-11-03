@@ -26,7 +26,7 @@ module ActionviewPrecompiler
       def symbol?; org::jruby::ast::SymbolNode === @node; end
 
       def argument_nodes
-        @node.args_node.to_a[0...@node.args_node.size].map do |arg|
+        @node.args_node.children.to_a[0...@node.args_node.size].map do |arg|
           self.class.wrap(arg)
         end
       end
