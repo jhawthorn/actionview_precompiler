@@ -159,6 +159,13 @@ module ActionviewPrecompiler
       assert_equal [:user], renders[0].locals_keys
     end
 
+    def test_finds_renders_with_trailing_comma
+      renders = parse_render_calls(%q{render("discussions/sidebar", discussion: discussion,)})
+      assert_equal 1, renders.length
+      assert_equal "discussions/_sidebar", renders[0].virtual_path
+      assert_equal [:discussion], renders[0].locals_keys
+    end
+
     def test_render_object
       renders = parse_render_calls(%q{render partial: "users/user", object: @user })
       assert_equal 1, renders.length
