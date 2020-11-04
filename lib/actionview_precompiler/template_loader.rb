@@ -1,5 +1,7 @@
 module ActionviewPrecompiler
   class TemplateLoader
+    VIRTUAL_PATH_REGEX = %r{\A(?:(?<prefix>.*)\/)?(?<partial>_)?(?<action>[^\/]+)}
+
     def initialize
       target = ActionController::Base
       @lookup_context = ActionView::LookupContext.new(target.view_paths)
@@ -7,16 +9,16 @@ module ActionviewPrecompiler
     end
 
     def load_template(template, locals)
-      details = {
-        locale: Array(template.details[:locale]),
-        variants: Array(template.details[:variant]),
-        formats: Array(template.details[:format]),
-        handlers: Array(template.details[:handler])
-      }
+      # Assume templates with different details take same locals
+      details = {}
 
-      args = [template.action, template.prefix, template.partial?, locals, details]
+      virtual_path = template.virtual_path
+      m = virtual_path.match(VIRTUAL_PATH_REGEX)
+      action = m[:action]
+      prefix = m[:prefix] ? [m[:prefix]] : []
+      partial = !!m[:partial]
 
-      templates = @lookup_context.find_all(*args)
+      templates = @lookup_context.find_all(action, prefix, partial, locals, details)
       templates.each do |template|
         template.send(:compile!, @view_context_class)
       end
