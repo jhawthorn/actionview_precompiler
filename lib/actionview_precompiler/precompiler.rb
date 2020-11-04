@@ -1,4 +1,4 @@
-require "actionview_precompiler/scanner"
+require "actionview_precompiler/template_scanner"
 require "actionview_precompiler/template_loader"
 
 module ActionviewPrecompiler
@@ -6,7 +6,7 @@ module ActionviewPrecompiler
     attr_accessor :no_locals_paths
 
     def initialize(view_dirs, verbose: false)
-      @scanner = Scanner.new(view_dirs)
+      @scanner = TemplateScanner.new(view_dirs)
       @loader = TemplateLoader.new
       @verbose = verbose
       @no_locals_paths = []

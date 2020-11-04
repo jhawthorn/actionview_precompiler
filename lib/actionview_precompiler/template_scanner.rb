@@ -1,7 +1,7 @@
 require "actionview_precompiler/template_file"
 
 module ActionviewPrecompiler
-  class Scanner
+  class TemplateScanner
     def initialize(view_dirs)
       @view_dirs = view_dirs
       @locals_sets = nil
