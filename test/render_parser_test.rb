@@ -160,10 +160,54 @@ module ActionviewPrecompiler
       assert_equal [:admin, :user, :user_counter, :user_iteration], renders[0].locals_keys
     end
 
+    def test_render_collection_and_locals
+      renders = parse_render_calls(%q{render partial: "users/user", collection: @users, locals: { admin: true } })
+      assert_equal 1, renders.length
+      assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [:admin, :user, :user_counter, :user_iteration], renders[0].locals_keys
+    end
+
+    def test_render_from_controller
+      renders = parse_render_calls(%q{render "users/show"}, from_controller: true)
+      assert_equal 1, renders.length
+      assert_equal :template, renders[0].render_type
+      assert_equal "users/show", renders[0].template
+      assert_equal "users/show", renders[0].virtual_path
+      assert_equal [], renders[0].locals_keys
+    end
+
+    def test_render_partial_from_controller
+      renders = parse_render_calls(%q{render partial: "users/user"}, from_controller: true)
+      assert_equal 1, renders.length
+      assert_equal :partial, renders[0].render_type
+      assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [], renders[0].locals_keys
+    end
+
+    def test_render_with_locals_from_controller
+      renders = parse_render_calls(%q{render "users/show", locals: { user: user }}, from_controller: true)
+      assert_equal 1, renders.length
+      assert_equal :template, renders[0].render_type
+      assert_equal "users/show", renders[0].template
+      assert_equal "users/show", renders[0].virtual_path
+      assert_equal [:user], renders[0].locals_keys
+    end
+
+    def test_render_partial_with_locals_from_controller
+      renders = parse_render_calls(%q{render partial: "users/user", locals: { user: user }}, from_controller: true)
+      assert_equal 1, renders.length
+      assert_equal :partial, renders[0].render_type
+      assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [:user], renders[0].locals_keys
+    end
+
     private
 
-    def parse_render_calls(code)
-      RenderParser.new(code, parser: self.class::Parser).render_calls
+    def parse_render_calls(code, **options)
+      RenderParser.new(code, parser: self.class::Parser, **options).render_calls
     end
   end
 

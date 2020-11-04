@@ -10,9 +10,10 @@ module ActionviewPrecompiler
   end
 
   class RenderParser
-    def initialize(code, parser: ASTParser)
+    def initialize(code, parser: ASTParser, from_controller: false)
       @code = code
       @parser = parser
+      @from_controller = from_controller
     end
 
     def render_calls
@@ -24,16 +25,41 @@ module ActionviewPrecompiler
 
     private
 
+    # Convert
+    #   render("foo", ...)
+    # into either
+    #   render(template: "foo", ...)
+    # or
+    #   render(partial: "foo", ...)
+    # depending on controller or view context
+    def normalize_args(string, options_hash)
+      if @from_controller
+        if options_hash
+          options = parse_hash_to_symbols(options_hash)
+        else
+          options = {}
+        end
+        return nil unless options
+        options.merge(template: string)
+      else
+        if options_hash
+          { partial: string, locals: options_hash }
+        else
+          { partial: string }
+        end
+      end
+    end
+
     def parse_render(node)
       node = node.argument_nodes
       if (node.length == 1 || node.length == 2) && node[0].string?
-        # FIXME: from template vs controller
-        options = {}
-        options[:partial] = node[0]
-        if node.length == 2
+        if node.length == 1
+          options = normalize_args(node[0], nil)
+        elsif node.length == 2
           return unless node[1].hash?
-          options[:locals] = node[1]
+          options = normalize_args(node[0], node[1])
         end
+        return nil unless options
         return parse_render_from_options(options)
       elsif node.length == 1 && node[0].hash?
         options = parse_hash_to_symbols(node[0])
