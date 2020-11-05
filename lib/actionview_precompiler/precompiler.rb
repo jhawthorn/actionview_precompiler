@@ -25,10 +25,6 @@ module ActionviewPrecompiler
       debug "Precompiled #{count} Templates"
     end
 
-    def debug(msg)
-      puts msg if @verbose
-    end
-
     def template_renders
       return @template_renders if @template_renders
 
@@ -45,6 +41,12 @@ module ActionviewPrecompiler
       end
 
       @template_renders = template_renders.to_a
+    end
+
+    private
+
+    def debug(msg)
+      puts msg if @verbose
     end
   end
 end
