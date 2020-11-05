@@ -160,14 +160,6 @@ module ActionviewPrecompiler
       assert_equal [:admin, :user, :user_counter, :user_iteration], renders[0].locals_keys
     end
 
-    def test_render_collection_and_locals
-      renders = parse_render_calls(%q{render partial: "users/user", collection: @users, locals: { admin: true } })
-      assert_equal 1, renders.length
-      assert_equal "users/user", renders[0].template
-      assert_equal "users/_user", renders[0].virtual_path
-      assert_equal [:admin, :user, :user_counter, :user_iteration], renders[0].locals_keys
-    end
-
     def test_render_from_controller
       renders = parse_render_calls(%q{render "users/show"}, from_controller: true)
       assert_equal 1, renders.length
