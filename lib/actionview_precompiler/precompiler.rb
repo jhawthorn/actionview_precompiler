@@ -1,4 +1,5 @@
 require "actionview_precompiler/template_scanner"
+require "actionview_precompiler/controller_scanner"
 require "actionview_precompiler/template_loader"
 
 module ActionviewPrecompiler

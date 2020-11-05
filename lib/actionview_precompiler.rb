@@ -5,6 +5,7 @@ require "actionview_precompiler/version"
 require "actionview_precompiler/ast_parser"
 require "actionview_precompiler/template_parser"
 require "actionview_precompiler/render_parser"
+require "actionview_precompiler/controller_parser"
 require "actionview_precompiler/precompiler"
 require "actionview_precompiler/parsed_filename"
 

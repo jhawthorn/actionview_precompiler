@@ -3,6 +3,7 @@ require "actionview_precompiler"
 
 FIXTURES_DIR = File.expand_path("./fixtures/", __dir__)
 FIXTURES_VIEW_DIR = File.join(FIXTURES_DIR, "views")
+FIXTURES_CONTROLLER_DIR = File.join(FIXTURES_DIR, "controllers")
 
 require "minitest/autorun"
 require "pry"
