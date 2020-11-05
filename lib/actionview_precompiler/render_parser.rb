@@ -84,14 +84,19 @@ module ActionviewPrecompiler
       end
     end
 
-    RENDER_TYPE_KEYS = [:partial, :template, :layout]
-    IGNORED_KEYS = [:formats]
-    ALL_KNOWN_KEYS = [*RENDER_TYPE_KEYS, *IGNORED_KEYS, :locals, :object, :collection, :as]
+    ALL_KNOWN_KEYS = [:partial, :template, :layout, :formats, :locals, :object, :collection, :as]
 
     def parse_render_from_options(options_hash)
       keys = options_hash.keys
 
-      unless (keys & RENDER_TYPE_KEYS).one?
+      render_type_keys =
+        if from_controller?
+          [:partial, :template]
+        else
+          [:partial, :template, :layout]
+        end
+
+      unless (keys & render_type_keys).one?
         # Must have one of partial:, template:, or layout:
         return nil
       end
@@ -101,7 +106,7 @@ module ActionviewPrecompiler
         return nil
       end
 
-      render_type = (keys & RENDER_TYPE_KEYS)[0]
+      render_type = (keys & render_type_keys)[0]
       template = parse_str(options_hash[render_type])
       return unless template
 
@@ -148,8 +153,14 @@ module ActionviewPrecompiler
       node.symbol? && node.to_symbol
     end
 
+    private
+
     def debug(message)
       warn message
+    end
+
+    def from_controller?
+      @from_controller
     end
   end
 end
