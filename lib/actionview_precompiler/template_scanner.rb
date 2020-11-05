@@ -7,24 +7,12 @@ module ActionviewPrecompiler
       @locals_sets = nil
     end
 
-    def templates
-      @templates ||=
-        @view_dirs.flat_map do |view_dir|
-          Dir["**/*", base: view_dir].sort.map do |file|
-            fullpath = File.expand_path(file, view_dir)
-            next if File.directory?(fullpath)
-
-            TemplateFile.new(fullpath, file)
-          end.compact
-        end
-    end
-
     def locals_sets
       return @locals_sets if @locals_sets
 
       @locals_sets = {}
 
-      templates.each do |template|
+      each_template do |template|
         parser = TemplateParser.new(template.fullpath)
         parser.render_calls.each do |render_call|
           virtual_path = render_call.virtual_path
@@ -41,6 +29,19 @@ module ActionviewPrecompiler
       @locals_sets.each_value(&:uniq!)
 
       @locals_sets
+    end
+
+    private
+
+    def each_template
+      @view_dirs.each do |view_dir|
+        Dir["**/*", base: view_dir].sort.map do |file|
+          fullpath = File.expand_path(file, view_dir)
+          next if File.directory?(fullpath)
+
+          yield TemplateFile.new(fullpath, file)
+        end.compact
+      end
     end
   end
 end
