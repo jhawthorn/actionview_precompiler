@@ -33,7 +33,7 @@ module ActionviewPrecompiler
     private
 
     def parse_template(filename)
-      TemplateParser.new("#{FIXTURES_DIR}/#{filename}")
+      TemplateParser.new("#{FIXTURES_VIEW_DIR}/#{filename}")
     end
   end
 end

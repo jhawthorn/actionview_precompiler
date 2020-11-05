@@ -4,7 +4,7 @@ module ActionviewPrecompiler
   class PrecompilerTest < Minitest::Test
     def test_each_template_render
       precompiler = Precompiler.new
-      precompiler.scan_view_dir FIXTURES_DIR
+      precompiler.scan_view_dir FIXTURES_VIEW_DIR
       template_renders = precompiler.template_renders
 
       expected_render = ["users/_user", ["user"]]
@@ -15,7 +15,7 @@ module ActionviewPrecompiler
       reset_action_view!
 
       precompiler = Precompiler.new
-      precompiler.scan_view_dir FIXTURES_DIR
+      precompiler.scan_view_dir FIXTURES_VIEW_DIR
 
       compiled_templates = []
       callback = ->(name, start, finish, id, payload) do
@@ -32,7 +32,7 @@ module ActionviewPrecompiler
     def test_precompiles_no_locals_paths
       reset_action_view!
 
-      precompiler = Precompiler.new([FIXTURES_DIR])
+      precompiler = Precompiler.new
       precompiler.no_locals_paths = ["layouts/site"]
 
       compiled_templates = []
