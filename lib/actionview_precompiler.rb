@@ -19,6 +19,9 @@ module ActionviewPrecompiler
   def self.precompile(verbose: false)
     paths = ActionController::Base.view_paths.map(&:path)
     precompiler = Precompiler.new(paths, verbose: verbose)
+
+    yield precompiler if block_given?
+
     precompiler.run
   end
 end

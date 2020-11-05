@@ -3,10 +3,13 @@ require "actionview_precompiler/template_loader"
 
 module ActionviewPrecompiler
   class Precompiler
+    attr_accessor :no_locals_paths
+
     def initialize(view_dirs, verbose: false)
       @scanner = Scanner.new(view_dirs)
       @loader = TemplateLoader.new
       @verbose = verbose
+      @no_locals_paths = []
     end
 
     def run
@@ -34,6 +37,8 @@ module ActionviewPrecompiler
           locals_set.each do |locals|
             yield template, locals
           end
+        elsif no_locals_paths.include?(template.virtual_path)
+          yield template, []
         else
           # Locals unknown
         end
