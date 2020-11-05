@@ -6,9 +6,9 @@ module ActionviewPrecompiler
     attr_accessor :no_locals_paths
 
     def initialize(view_dirs, verbose: false)
-      @scanners = [
-        TemplateScanner.new(view_dirs)
-      ]
+      @scanners = view_dirs.map do |view_dir|
+        TemplateScanner.new(view_dir)
+      end
       @loader = TemplateLoader.new
       @verbose = verbose
       @no_locals_paths = []

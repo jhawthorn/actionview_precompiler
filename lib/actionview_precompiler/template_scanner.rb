@@ -2,8 +2,10 @@ require "actionview_precompiler/template_file"
 
 module ActionviewPrecompiler
   class TemplateScanner
-    def initialize(view_dirs)
-      @view_dirs = view_dirs
+    attr_reader :view_dir
+
+    def initialize(view_dir)
+      @view_dir = view_dir
       @locals_sets = nil
     end
 
@@ -34,14 +36,12 @@ module ActionviewPrecompiler
     private
 
     def each_template
-      @view_dirs.each do |view_dir|
-        Dir["**/*", base: view_dir].sort.map do |file|
-          fullpath = File.expand_path(file, view_dir)
-          next if File.directory?(fullpath)
+      Dir["**/*", base: view_dir].sort.map do |file|
+        fullpath = File.expand_path(file, view_dir)
+        next if File.directory?(fullpath)
 
-          yield TemplateFile.new(fullpath, file)
-        end.compact
-      end
+        yield TemplateFile.new(fullpath, file)
+      end.compact
     end
   end
 end
