@@ -6,13 +6,10 @@ module ActionviewPrecompiler
 
     def initialize(view_dir)
       @view_dir = view_dir
-      @locals_sets = nil
     end
 
-    def locals_sets
-      return @locals_sets if @locals_sets
-
-      @locals_sets = {}
+    def template_renders
+      template_renders = []
 
       each_template do |template|
         parser = TemplateParser.new(template.fullpath)
@@ -23,14 +20,14 @@ module ActionviewPrecompiler
             # controller, but is a safe bet most of the time.
             virtual_path = "#{template.prefix}/#{virtual_path}"
           end
-          @locals_sets[virtual_path] ||= []
-          @locals_sets[virtual_path] << render_call.locals_keys.map(&:to_s).sort
+
+          locals = render_call.locals_keys.map(&:to_s).sort
+
+          template_renders << [virtual_path, locals]
         end
       end
 
-      @locals_sets.each_value(&:uniq!)
-
-      @locals_sets
+      template_renders.uniq
     end
 
     private

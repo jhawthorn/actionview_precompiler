@@ -30,21 +30,19 @@ module ActionviewPrecompiler
     def template_renders
       return @template_renders if @template_renders
 
-      template_renders = Set.new
+      template_renders = []
 
       @scanners.each do |scanner|
-        scanner.locals_sets.each do |virtual_path, locals_set|
-          locals_set.each do |locals|
-            template_renders << [virtual_path, locals]
-          end
-        end
+        template_renders.concat scanner.template_renders
       end
 
       no_locals_paths.each do |template|
         template_renders << [template, []]
       end
 
-      @template_renders = template_renders.to_a
+      template_renders.uniq!
+
+      @template_renders = template_renders
     end
 
     private
