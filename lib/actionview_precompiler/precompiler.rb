@@ -10,11 +10,12 @@ module ActionviewPrecompiler
       @loader = TemplateLoader.new
       @verbose = verbose
       @no_locals_paths = []
+      @template_renders = nil
     end
 
     def run
       count = 0
-      each_template_render do |template, locals|
+      template_renders.each do |template, locals|
         debug "precompiling: #{template.inspect}"
         count += 1
 
@@ -28,18 +29,22 @@ module ActionviewPrecompiler
       puts msg if @verbose
     end
 
-    def each_template_render
-      return enum_for(__method__) unless block_given?
+    def template_renders
+      return @template_renders if @template_renders
+
+      template_renders = Set.new
 
       @scanner.locals_sets.each do |virtual_path, locals_set|
         locals_set.each do |locals|
-          yield virtual_path, locals
+          template_renders << [virtual_path, locals]
         end
       end
 
       no_locals_paths.each do |template|
-        yield template, []
+        template_renders << [template, []]
       end
+
+      @template_renders = template_renders.to_a
     end
   end
 end

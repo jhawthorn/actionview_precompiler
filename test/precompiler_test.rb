@@ -4,10 +4,10 @@ module ActionviewPrecompiler
   class PrecompilerTest < Minitest::Test
     def test_each_template_render
       precompiler = Precompiler.new([FIXTURES_DIR])
-      lookup_args = precompiler.each_template_render.to_a
+      template_renders = precompiler.template_renders
 
       expected_render = ["users/_user", ["user"]]
-      assert_includes lookup_args, expected_render
+      assert_includes template_renders, expected_render
     end
 
     def test_precompiler_run
