@@ -8,11 +8,10 @@ module ActionviewPrecompiler
       @view_context_class = target.view_context_class
     end
 
-    def load_template(template, locals)
+    def load_template(virtual_path, locals)
       # Assume templates with different details take same locals
       details = {}
 
-      virtual_path = template.virtual_path
       m = virtual_path.match(VIRTUAL_PATH_REGEX)
       action = m[:action]
       prefix = m[:prefix] ? [m[:prefix]] : []

@@ -31,17 +31,14 @@ module ActionviewPrecompiler
     def each_template_render
       return enum_for(__method__) unless block_given?
 
-      @scanner.templates.each do |template|
-        locals_set = @scanner.locals_sets[template.virtual_path]
-        if locals_set
-          locals_set.each do |locals|
-            yield template, locals
-          end
-        elsif no_locals_paths.include?(template.virtual_path)
-          yield template, []
-        else
-          # Locals unknown
+      @scanner.locals_sets.each do |virtual_path, locals_set|
+        locals_set.each do |locals|
+          yield virtual_path, locals
         end
+      end
+
+      no_locals_paths.each do |template|
+        yield template, []
       end
     end
   end
