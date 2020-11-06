@@ -17,11 +17,20 @@ module ActionviewPrecompiler
   end
 
   def self.precompile(verbose: false)
-    paths = ActionController::Base.view_paths.map(&:path)
     precompiler = Precompiler.new(paths, verbose: verbose)
+<<<<<<< HEAD
 
     yield precompiler if block_given?
 
+||||||| parent of 92214df (Configure via scan_view_dir instead of init)
+=======
+
+    # Setup view dirs
+    ActionController::Base.view_paths.each do |view_path|
+      precompiler.scan_view_dir view_path.path
+    end
+
+>>>>>>> 92214df (Configure via scan_view_dir instead of init)
     precompiler.run
   end
 end

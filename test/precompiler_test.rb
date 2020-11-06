@@ -3,7 +3,8 @@ require "test_helper"
 module ActionviewPrecompiler
   class PrecompilerTest < Minitest::Test
     def test_each_template_render
-      precompiler = Precompiler.new([FIXTURES_DIR])
+      precompiler = Precompiler.new
+      precompiler.scan_view_dir FIXTURES_DIR
       template_renders = precompiler.template_renders
 
       expected_render = ["users/_user", ["user"]]
@@ -13,7 +14,8 @@ module ActionviewPrecompiler
     def test_precompiler_run
       reset_action_view!
 
-      precompiler = Precompiler.new([FIXTURES_DIR])
+      precompiler = Precompiler.new
+      precompiler.scan_view_dir FIXTURES_DIR
 
       compiled_templates = []
       callback = ->(name, start, finish, id, payload) do
