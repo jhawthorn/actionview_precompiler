@@ -196,6 +196,15 @@ module ActionviewPrecompiler
       assert_equal [:user], renders[0].locals_keys
     end
 
+    def test_render_to_string
+      renders = parse_render_calls(%q{render_to_string(partial: "users/user", locals: { user: user })}, from_controller: true)
+      assert_equal 1, renders.length
+      assert_equal :partial, renders[0].render_type
+      assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [:user], renders[0].locals_keys
+    end
+
     private
 
     def parse_render_calls(code, **options)

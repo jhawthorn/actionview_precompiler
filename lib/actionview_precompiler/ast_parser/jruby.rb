@@ -79,7 +79,7 @@ module ActionviewPrecompiler
     end
 
     def render_call?(node)
-      fcall?(node, :render)
+      fcall?(node, :render) || fcall?(node, :render_to_string)
     end
   end
 end

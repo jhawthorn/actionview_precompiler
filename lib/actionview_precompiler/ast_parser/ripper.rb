@@ -144,7 +144,7 @@ module ActionviewPrecompiler
       end
 
       def on_render_call(node)
-        if node.fcall_named?("render")
+        if node.fcall_named?("render") || node.fcall_named?("render_to_string")
           @render_calls << node
         end
         node
