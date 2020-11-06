@@ -18,20 +18,25 @@ module ActionviewPrecompiler
   end
 
   def self.precompile(verbose: false)
-    precompiler = Precompiler.new(paths, verbose: verbose)
-<<<<<<< HEAD
+    precompiler = Precompiler.new(verbose: verbose)
 
-    yield precompiler if block_given?
+    if block_given?
+      # Custom configuration
+      yield precompiler
+    else
+      # Scan view dirs
+      ActionController::Base.view_paths.each do |view_path|
+        precompiler.scan_view_dir view_path.path
+      end
 
-||||||| parent of 92214df (Configure via scan_view_dir instead of init)
-=======
-
-    # Setup view dirs
-    ActionController::Base.view_paths.each do |view_path|
-      precompiler.scan_view_dir view_path.path
+      # If we have an application, scan controllers
+      if Rails.respond_to?(:application)
+        Rails.application.paths["app/controllers"].each do |path|
+          precompiler.scan_controller_dir path.to_s
+        end
+      end
     end
 
->>>>>>> 92214df (Configure via scan_view_dir instead of init)
     precompiler.run
   end
 end

@@ -18,6 +18,10 @@ module ActionviewPrecompiler
       @scanners << TemplateScanner.new(view_dir)
     end
 
+    def scan_controller_dir(controller_dir)
+      @scanners << ControllerScanner.new(controller_dir)
+    end
+
     def run
       count = 0
       template_renders.each do |template, locals|
