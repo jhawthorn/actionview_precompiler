@@ -140,6 +140,11 @@ module ActionviewPrecompiler
       assert_equal [:admin, :user, :user_counter, :user_iteration], renders[0].locals_keys
     end
 
+    def test_layout_from_template
+      renders = parse_render_calls(%q{layout "foobar" }, from_controller: false)
+      assert_equal 0, renders.length
+    end
+
     def test_render_from_controller
       renders = parse_render_calls(%q{render "users/show"}, from_controller: true)
       assert_equal 1, renders.length
@@ -173,6 +178,20 @@ module ActionviewPrecompiler
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
+    end
+
+    def test_layout_from_controller
+      renders = parse_render_calls(%q{layout "foobar" }, from_controller: true)
+      assert_equal 1, renders.length
+      assert_equal "layouts/foobar", renders[0].virtual_path
+      assert_equal [], renders[0].locals_keys
+    end
+
+    def test_layout_with_symbol_from_controller
+      renders = parse_render_calls(%q{layout :foobar }, from_controller: true)
+      assert_equal 1, renders.length
+      assert_equal "layouts/foobar", renders[0].virtual_path
+      assert_equal [], renders[0].locals_keys
     end
 
     private
