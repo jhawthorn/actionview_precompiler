@@ -92,7 +92,7 @@ module ActionviewPrecompiler
 
     extend self
 
-    METHODS_TO_PARSE = %i(render render_to_string)
+    METHODS_TO_PARSE = %i(render render_to_string layout)
 
     def parse_render_nodes(code)
       renders = extract_render_nodes(parse(code))

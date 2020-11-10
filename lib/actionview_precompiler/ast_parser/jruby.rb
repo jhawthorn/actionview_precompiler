@@ -56,7 +56,7 @@ module ActionviewPrecompiler
 
     extend self
 
-    METHODS_TO_PARSE = %i(render render_to_string)
+    METHODS_TO_PARSE = %i(render render_to_string layout)
 
     def parse_render_nodes(code)
       node = Node.wrap(JRuby.parse(code))

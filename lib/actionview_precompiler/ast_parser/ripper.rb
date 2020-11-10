@@ -127,7 +127,7 @@ module ActionviewPrecompiler
     class RenderCallParser < NodeParser
       attr_reader :render_calls
 
-      METHODS_TO_PARSE = %w(render render_to_string)
+      METHODS_TO_PARSE = %w(render render_to_string layout)
 
       def initialize(*args)
         super

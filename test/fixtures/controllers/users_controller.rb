@@ -1,4 +1,7 @@
 class UsersController < ApplicationController
+
+  layout :site
+
   def show
     render "show"
   end

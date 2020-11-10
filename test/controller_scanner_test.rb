@@ -15,5 +15,12 @@ module ActionviewPrecompiler
 
       assert_includes renders, ["users/_with_locals", ["user"]]
     end
+
+    def test_finds_layout
+      scanner = ControllerScanner.new(FIXTURES_CONTROLLER_DIR)
+      renders = scanner.template_renders
+
+      assert_includes renders, ["layouts/site", []]
+    end
   end
 end
