@@ -56,9 +56,15 @@ module ActionviewPrecompiler
 
     extend self
 
+    METHODS_TO_PARSE = %i(render render_to_string)
+
     def parse_render_nodes(code)
       node = Node.wrap(JRuby.parse(code))
-      extract_render_nodes(node)
+
+      renders = extract_render_nodes(node)
+      renders.group_by(&:first).collect do |method, nodes|
+        [ method, nodes.collect { |v| v[1] } ]
+      end.to_h
     end
 
     def node?(node)
@@ -72,14 +78,16 @@ module ActionviewPrecompiler
     def extract_render_nodes(node)
       return [] unless node?(node)
       renders = node.children.flat_map { |c| extract_render_nodes(c) }
-      if render_call?(node)
-        renders << node
-      end
+
+      is_render, method = render_call?(node)
+      renders << [method, node] if is_render
+
       renders
     end
 
     def render_call?(node)
-      fcall?(node, :render) || fcall?(node, :render_to_string)
+      METHODS_TO_PARSE.each { |m| return [true, m] if fcall?(node, m) }
+      false
     end
   end
 end

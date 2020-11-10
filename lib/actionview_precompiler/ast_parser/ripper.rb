@@ -127,6 +127,8 @@ module ActionviewPrecompiler
     class RenderCallParser < NodeParser
       attr_reader :render_calls
 
+      METHODS_TO_PARSE = %w(render render_to_string)
+
       def initialize(*args)
         super
 
@@ -144,8 +146,11 @@ module ActionviewPrecompiler
       end
 
       def on_render_call(node)
-        if node.fcall_named?("render") || node.fcall_named?("render_to_string")
-          @render_calls << node
+        METHODS_TO_PARSE.each do |method|
+          if node.fcall_named?(method)
+            @render_calls << [method, node]
+            return node
+          end
         end
         node
       end
@@ -160,7 +165,10 @@ module ActionviewPrecompiler
     def parse_render_nodes(code)
       parser = RenderCallParser.new(code)
       parser.parse
-      parser.render_calls
+
+      parser.render_calls.group_by(&:first).collect do |method, nodes|
+        [ method.to_sym, nodes.collect { |v| v[1] } ]
+      end.to_h
     end
   end
 end
