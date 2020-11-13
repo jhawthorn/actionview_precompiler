@@ -1,6 +1,6 @@
 module ActionviewPrecompiler
   class TemplateLoader
-    VIRTUAL_PATH_REGEX = %r{\A(?:(?<prefix>.*)\/)?(?<partial>_)?(?<action>[^\/]+)}
+    VIRTUAL_PATH_REGEX = %r{\A(?:(?<prefix>.*)\/)?(?<partial>_)?(?<action>[^\/\.]+)}
 
     def initialize
       target = ActionController::Base
