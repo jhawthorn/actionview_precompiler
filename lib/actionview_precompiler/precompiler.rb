@@ -1,5 +1,6 @@
 require "actionview_precompiler/template_scanner"
 require "actionview_precompiler/controller_scanner"
+require "actionview_precompiler/helper_scanner"
 require "actionview_precompiler/template_loader"
 
 module ActionviewPrecompiler
@@ -20,6 +21,10 @@ module ActionviewPrecompiler
 
     def scan_controller_dir(controller_dir)
       @scanners << ControllerScanner.new(controller_dir)
+    end
+
+    def scan_helper_dir(controller_dir)
+      @scanners << HelperScanner.new(controller_dir)
     end
 
     def run
