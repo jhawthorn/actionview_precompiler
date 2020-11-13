@@ -22,7 +22,6 @@ module ActionviewPrecompiler
       renders = parse_render_calls(%q{render "users/user"})
       assert_equal 1, renders.length
       render = renders[0]
-      assert_equal "users/user", render.template
       assert_equal "users/_user", render.virtual_path
       assert_equal [], render.locals_keys
     end
@@ -31,7 +30,6 @@ module ActionviewPrecompiler
       renders = parse_render_calls(%q{render partial: "users/user"})
       assert_equal 1, renders.length
       render = renders[0]
-      assert_equal "users/user", render.template
       assert_equal "users/_user", render.virtual_path
       assert_equal [], render.locals_keys
     end
@@ -40,7 +38,6 @@ module ActionviewPrecompiler
       renders = parse_render_calls(%q{render({partial: "users/user"})})
       assert_equal 1, renders.length
       render = renders[0]
-      assert_equal "users/user", render.template
       assert_equal "users/_user", render.virtual_path
       assert_equal [], render.locals_keys
     end
@@ -49,8 +46,6 @@ module ActionviewPrecompiler
       renders = parse_render_calls(%q{render template: "users/show"})
       assert_equal 1, renders.length
       render = renders[0]
-      assert_equal :template, render.render_type
-      assert_equal "users/show", render.template
       assert_equal "users/show", render.virtual_path
       assert_equal [], render.locals_keys
     end
@@ -59,8 +54,6 @@ module ActionviewPrecompiler
       renders = parse_render_calls(%q{render layout: "users/user_layout"})
       assert_equal 1, renders.length
       render = renders[0]
-      assert_equal :layout, render.render_type
-      assert_equal "users/user_layout", render.template
       assert_equal "users/_user_layout", render.virtual_path
       assert_equal [], render.locals_keys
     end
@@ -72,8 +65,6 @@ module ActionviewPrecompiler
       RUBY
       assert_equal 1, renders.length
       render = renders[0]
-      assert_equal :layout, render.render_type
-      assert_equal "users/user_layout", render.template
       assert_equal "users/_user_layout", render.virtual_path
       assert_equal [], render.locals_keys
     end
@@ -82,8 +73,6 @@ module ActionviewPrecompiler
       renders = parse_render_calls(%q{render layout: "users/user_layout", &my_proc})
       assert_equal 1, renders.length
       render = renders[0]
-      assert_equal :layout, render.render_type
-      assert_equal "users/user_layout", render.template
       assert_equal "users/_user_layout", render.virtual_path
       assert_equal [], render.locals_keys
     end
@@ -91,7 +80,6 @@ module ActionviewPrecompiler
     def test_finds_simple_render_with_locals
       renders = parse_render_calls(%q{render "users/user", user: @user})
       assert_equal 1, renders.length
-      assert_equal "users/user", renders[0].template
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
@@ -99,7 +87,6 @@ module ActionviewPrecompiler
     def test_finds_simple_render_hash_with_empty_locals
       renders = parse_render_calls(%q{render partial: "users/user", locals: { } })
       assert_equal 1, renders.length
-      assert_equal "users/user", renders[0].template
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [], renders[0].locals_keys
     end
@@ -107,7 +94,6 @@ module ActionviewPrecompiler
     def test_finds_simple_render_hash_with_locals
       renders = parse_render_calls(%q{render partial: "users/user", locals: { user: @user } })
       assert_equal 1, renders.length
-      assert_equal "users/user", renders[0].template
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
@@ -115,7 +101,6 @@ module ActionviewPrecompiler
     def test_render_object
       renders = parse_render_calls(%q{render partial: "users/user", object: @user })
       assert_equal 1, renders.length
-      assert_equal "users/user", renders[0].template
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
@@ -123,7 +108,6 @@ module ActionviewPrecompiler
     def test_render_object_as
       renders = parse_render_calls(%q{render partial: "users/user", object: @user, as: :customer })
       assert_equal 1, renders.length
-      assert_equal "users/user", renders[0].template
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:customer], renders[0].locals_keys
     end
@@ -131,7 +115,6 @@ module ActionviewPrecompiler
     def test_render_object_and_locals
       renders = parse_render_calls(%q{render partial: "users/user", object: @user, locals: { admin: true } })
       assert_equal 1, renders.length
-      assert_equal "users/user", renders[0].template
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:admin, :user], renders[0].locals_keys
     end
@@ -139,7 +122,6 @@ module ActionviewPrecompiler
     def test_render_collection
       renders = parse_render_calls(%q{render partial: "users/user", collection: @users })
       assert_equal 1, renders.length
-      assert_equal "users/user", renders[0].template
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user, :user_counter, :user_iteration], renders[0].locals_keys
     end
@@ -147,7 +129,6 @@ module ActionviewPrecompiler
     def test_render_collection_as
       renders = parse_render_calls(%q{render partial: "users/user", collection: @users, as: :customer })
       assert_equal 1, renders.length
-      assert_equal "users/user", renders[0].template
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:customer, :customer_counter, :customer_iteration], renders[0].locals_keys
     end
@@ -155,16 +136,18 @@ module ActionviewPrecompiler
     def test_render_collection_and_locals
       renders = parse_render_calls(%q{render partial: "users/user", collection: @users, locals: { admin: true } })
       assert_equal 1, renders.length
-      assert_equal "users/user", renders[0].template
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:admin, :user, :user_counter, :user_iteration], renders[0].locals_keys
+    end
+
+    def test_layout_from_template
+      renders = parse_render_calls(%q{layout "foobar" }, from_controller: false)
+      assert_equal 0, renders.length
     end
 
     def test_render_from_controller
       renders = parse_render_calls(%q{render "users/show"}, from_controller: true)
       assert_equal 1, renders.length
-      assert_equal :template, renders[0].render_type
-      assert_equal "users/show", renders[0].template
       assert_equal "users/show", renders[0].virtual_path
       assert_equal [], renders[0].locals_keys
     end
@@ -172,8 +155,6 @@ module ActionviewPrecompiler
     def test_render_partial_from_controller
       renders = parse_render_calls(%q{render partial: "users/user"}, from_controller: true)
       assert_equal 1, renders.length
-      assert_equal :partial, renders[0].render_type
-      assert_equal "users/user", renders[0].template
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [], renders[0].locals_keys
     end
@@ -181,8 +162,6 @@ module ActionviewPrecompiler
     def test_render_with_locals_from_controller
       renders = parse_render_calls(%q{render "users/show", locals: { user: user }}, from_controller: true)
       assert_equal 1, renders.length
-      assert_equal :template, renders[0].render_type
-      assert_equal "users/show", renders[0].template
       assert_equal "users/show", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
@@ -190,8 +169,6 @@ module ActionviewPrecompiler
     def test_render_partial_with_locals_from_controller
       renders = parse_render_calls(%q{render partial: "users/user", locals: { user: user }}, from_controller: true)
       assert_equal 1, renders.length
-      assert_equal :partial, renders[0].render_type
-      assert_equal "users/user", renders[0].template
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
@@ -199,10 +176,22 @@ module ActionviewPrecompiler
     def test_render_to_string
       renders = parse_render_calls(%q{render_to_string(partial: "users/user", locals: { user: user })}, from_controller: true)
       assert_equal 1, renders.length
-      assert_equal :partial, renders[0].render_type
-      assert_equal "users/user", renders[0].template
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
+    end
+
+    def test_layout_from_controller
+      renders = parse_render_calls(%q{layout "foobar" }, from_controller: true)
+      assert_equal 1, renders.length
+      assert_equal "layouts/foobar", renders[0].virtual_path
+      assert_equal [], renders[0].locals_keys
+    end
+
+    def test_layout_with_symbol_from_controller
+      renders = parse_render_calls(%q{layout :foobar }, from_controller: true)
+      assert_equal 1, renders.length
+      assert_equal "layouts/foobar", renders[0].virtual_path
+      assert_equal [], renders[0].locals_keys
     end
 
     private

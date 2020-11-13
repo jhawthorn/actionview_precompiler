@@ -8,8 +8,7 @@ module ActionviewPrecompiler
       assert_kind_of ActionView::Template::Handlers::ERB, template.handler
       renders =  template.render_calls
       assert_equal 1, renders.length
-      assert_equal :partial, renders[0].render_type
-      assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
 
@@ -25,8 +24,8 @@ module ActionviewPrecompiler
       assert_equal "plain_rubby.html.ruby", template.basename
       renders =  template.render_calls
       assert_equal 1, renders.length
-      assert_equal :partial, renders[0].render_type
-      assert_equal "users/user", renders[0].template
+      assert_equal "users/_user", renders[0].virtual_path
+
       assert_equal [:user], renders[0].locals_keys
     end
 

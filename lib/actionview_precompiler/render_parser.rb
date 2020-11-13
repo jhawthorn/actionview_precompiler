@@ -1,13 +1,5 @@
 module ActionviewPrecompiler
-  RenderCall = Struct.new(:render_type, :template, :locals_keys) do
-    def virtual_path
-      if render_type == :partial || render_type == :layout
-        @virtual_path ||= template.gsub(%r{(/|^)([^/]*)\z}, '\1_\2')
-      else
-        template
-      end
-    end
-  end
+  RenderCall = Struct.new(:virtual_path, :locals_keys)
 
   class RenderParser
     def initialize(code, parser: ASTParser, from_controller: false)
@@ -18,9 +10,16 @@ module ActionviewPrecompiler
 
     def render_calls
       render_nodes = @parser.parse_render_nodes(@code)
-      render_nodes.map do |node|
-        parse_render(node)
-      end.compact
+      render_nodes.map do |method, nodes|
+        parse_method = case method
+        when :layout
+          :parse_layout
+        else
+          :parse_render
+        end
+
+        nodes.map { |n| send(parse_method, n) }
+      end.flatten.compact
     end
 
     private
@@ -68,6 +67,16 @@ module ActionviewPrecompiler
       else
         nil
       end
+    end
+
+    def parse_layout(node)
+      return nil unless from_controller?
+
+      template = parse_str(node.argument_nodes[0]) || parse_sym(node.argument_nodes[0])
+      return nil unless template
+
+      virtual_path = layout_to_virtual_path(template)
+      RenderCall.new(virtual_path, [])
     end
 
     def parse_hash(node)
@@ -142,7 +151,8 @@ module ActionviewPrecompiler
         end
       end
 
-      RenderCall.new(render_type, template, locals_keys)
+      virtual_path = partial_to_virtual_path(render_type, template)
+      RenderCall.new(virtual_path, locals_keys)
     end
 
     def parse_str(node)
@@ -161,6 +171,18 @@ module ActionviewPrecompiler
 
     def from_controller?
       @from_controller
+    end
+
+    def partial_to_virtual_path(render_type, partial_path)
+      if render_type == :partial || render_type == :layout
+        partial_path.gsub(%r{(/|^)([^/]*)\z}, '\1_\2')
+      else
+        partial_path
+      end
+    end
+
+    def layout_to_virtual_path(layout_path)
+      "layouts/#{layout_path}"
     end
   end
 end
