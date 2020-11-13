@@ -24,11 +24,13 @@ module ActionviewPrecompiler
 
     def run
       count = 0
-      template_renders.each do |template, locals|
-        debug "precompiling: #{template.inspect}"
-        count += 1
+      template_renders.each do |virtual_path, locals|
+        debug "precompiling: #{virtual_path}"
 
-        @loader.load_template(template, locals)
+        templates = @loader.load_template(virtual_path, locals)
+        count += templates.count
+
+        debug "  No templates found at #{virtual_path}" if templates.empty?
       end
 
       debug "Precompiled #{count} Templates"
