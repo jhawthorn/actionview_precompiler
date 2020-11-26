@@ -105,8 +105,8 @@ module ActionviewPrecompiler
           [:partial, :template, :layout]
         end
 
-      unless (keys & render_type_keys).one?
-        # Must have one of partial:, template:, or layout:
+      if (keys & render_type_keys).size < 1
+        # Must have at least one of render keys
         return nil
       end
 
@@ -152,7 +152,27 @@ module ActionviewPrecompiler
       end
 
       virtual_path = partial_to_virtual_path(render_type, template)
-      RenderCall.new(virtual_path, locals_keys)
+      renders = [RenderCall.new(virtual_path, locals_keys)]
+
+      # Support for rendering multiple templates (i.e. a partial with a layout)
+      if layout_template = render_template_with_layout?(render_type, options_hash)
+        virtual_path = if from_controller?
+          layout_to_virtual_path(layout_template)
+        else
+          if !layout_template.include?("/") &&
+            partial_prefix = template.match(%r{(.*)/([^/]*)\z})
+            # TODO: use the file path that this render call was found in to
+            # generate the partial prefix instead of rendered partial.
+            partial_prefix = partial_prefix[1]
+            layout_template = "#{partial_prefix}/#{layout_template}"
+          end
+          partial_to_virtual_path(:layout, layout_template)
+        end
+
+        renders << RenderCall.new(virtual_path, locals_keys)
+      end
+
+      renders
     end
 
     def parse_str(node)
@@ -171,6 +191,12 @@ module ActionviewPrecompiler
 
     def from_controller?
       @from_controller
+    end
+
+    def render_template_with_layout?(render_type, options_hash)
+      if render_type != :layout && options_hash.key?(:layout)
+        parse_str(options_hash[:layout])
+      end
     end
 
     def partial_to_virtual_path(render_type, partial_path)

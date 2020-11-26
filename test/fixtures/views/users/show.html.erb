@@ -1,3 +1,3 @@
-<% layout "foo" %>
-
 <%= render "users/user", user: @user %>
+
+<%= render partial: "users/description", layout: "foo", locals: { bar: true } %>

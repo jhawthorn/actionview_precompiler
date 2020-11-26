@@ -77,6 +77,25 @@ module ActionviewPrecompiler
       assert_equal [], render.locals_keys
     end
 
+    def test_render_partial_with_layout
+      renders = parse_render_calls(%q{render partial: "users/user", layout: "foobar", locals: { buzz: true }})
+      assert_equal 2, renders.length
+      assert_equal ["users/_user", "users/_foobar"], renders.map(&:virtual_path)
+      assert_equal [[:buzz], [:buzz]], renders.map(&:locals_keys)
+    end
+
+    def test_render_partial_with_layout_in_different_directory
+      renders = parse_render_calls(%q{render partial: "users/user", layout: "foo/bar", locals: { buzz: true }})
+      assert_equal 2, renders.length
+      assert_equal ["users/_user", "foo/_bar"], renders.map(&:virtual_path)
+      assert_equal [[:buzz], [:buzz]], renders.map(&:locals_keys)
+    end
+
+    def test_ignores_layout_outside_of_render_calls
+      renders = parse_render_calls(%q{layout "foobar" }, from_controller: false)
+      assert_equal 0, renders.length
+    end
+
     def test_finds_simple_render_with_locals
       renders = parse_render_calls(%q{render "users/user", user: @user})
       assert_equal 1, renders.length
@@ -140,11 +159,6 @@ module ActionviewPrecompiler
       assert_equal [:admin, :user, :user_counter, :user_iteration], renders[0].locals_keys
     end
 
-    def test_layout_from_template
-      renders = parse_render_calls(%q{layout "foobar" }, from_controller: false)
-      assert_equal 0, renders.length
-    end
-
     def test_render_from_controller
       renders = parse_render_calls(%q{render "users/show"}, from_controller: true)
       assert_equal 1, renders.length
@@ -192,6 +206,20 @@ module ActionviewPrecompiler
       assert_equal 1, renders.length
       assert_equal "layouts/foobar", renders[0].virtual_path
       assert_equal [], renders[0].locals_keys
+    end
+
+    def test_render_with_layout_from_controller
+      renders = parse_render_calls(%q{render "site/index", layout: "site", locals: { foo: "bar" }}, from_controller: true)
+      assert_equal 2, renders.length
+      assert_equal ["site/index", "layouts/site"], renders.map(&:virtual_path)
+      assert_equal [[:foo], [:foo]], renders.map(&:locals_keys)
+    end
+
+    def test_render_with_layout_bool_from_controller
+      renders = parse_render_calls(%q{render "site/index", layout: false, locals: { foo: "bar" }}, from_controller: true)
+      assert_equal 1, renders.length
+      assert_equal "site/index", renders[0].virtual_path
+      assert_equal [:foo], renders[0].locals_keys
     end
 
     private
