@@ -93,7 +93,7 @@ module ActionviewPrecompiler
       end
     end
 
-    ALL_KNOWN_KEYS = [:partial, :template, :layout, :formats, :locals, :object, :collection, :as, :status, :content_type, :location]
+    ALL_KNOWN_KEYS = [:partial, :template, :layout, :formats, :locals, :object, :collection, :as, :status, :content_type, :location, :spacer_template]
 
     def parse_render_from_options(options_hash)
       keys = options_hash.keys
@@ -172,6 +172,11 @@ module ActionviewPrecompiler
         renders << RenderCall.new(virtual_path, locals_keys)
       end
 
+      if spacer_template = render_template_with_spacer?(options_hash)
+        virtual_path = partial_to_virtual_path(:partial, spacer_template)
+        renders << RenderCall.new(virtual_path, locals_keys)
+      end
+
       renders
     end
 
@@ -196,6 +201,12 @@ module ActionviewPrecompiler
     def render_template_with_layout?(render_type, options_hash)
       if render_type != :layout && options_hash.key?(:layout)
         parse_str(options_hash[:layout])
+      end
+    end
+
+    def render_template_with_spacer?(options_hash)
+      if !from_controller? && options_hash.key?(:spacer_template)
+        parse_str(options_hash[:spacer_template])
       end
     end
 
