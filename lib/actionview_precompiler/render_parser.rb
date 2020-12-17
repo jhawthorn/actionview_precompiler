@@ -93,9 +93,10 @@ module ActionviewPrecompiler
       end
     end
 
-    ALL_KNOWN_KEYS = [:partial, :template, :layout, :formats, :locals, :object, :collection, :as, :status, :content_type, :location]
+    ALL_KNOWN_KEYS = [:partial, :template, :layout, :formats, :locals, :object, :collection, :as, :status, :content_type, :location, :spacer_template]
 
     def parse_render_from_options(options_hash)
+      renders = []
       keys = options_hash.keys
 
       render_type_keys =
@@ -132,6 +133,12 @@ module ActionviewPrecompiler
         locals_keys = []
       end
 
+      if spacer_template = render_template_with_spacer?(options_hash)
+        virtual_path = partial_to_virtual_path(:partial, spacer_template)
+        # Locals keys should not include collection keys
+        renders << RenderCall.new(virtual_path, locals_keys.dup)
+      end
+
       if options_hash.key?(:object) || options_hash.key?(:collection)
         return nil if options_hash.key?(:object) && options_hash.key?(:collection)
         return nil unless options_hash.key?(:partial)
@@ -152,7 +159,7 @@ module ActionviewPrecompiler
       end
 
       virtual_path = partial_to_virtual_path(render_type, template)
-      renders = [RenderCall.new(virtual_path, locals_keys)]
+      renders << RenderCall.new(virtual_path, locals_keys)
 
       # Support for rendering multiple templates (i.e. a partial with a layout)
       if layout_template = render_template_with_layout?(render_type, options_hash)
@@ -196,6 +203,12 @@ module ActionviewPrecompiler
     def render_template_with_layout?(render_type, options_hash)
       if render_type != :layout && options_hash.key?(:layout)
         parse_str(options_hash[:layout])
+      end
+    end
+
+    def render_template_with_spacer?(options_hash)
+      if !from_controller? && options_hash.key?(:spacer_template)
+        parse_str(options_hash[:spacer_template])
       end
     end
 
