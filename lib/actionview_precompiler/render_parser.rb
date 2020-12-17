@@ -93,7 +93,7 @@ module ActionviewPrecompiler
       end
     end
 
-    ALL_KNOWN_KEYS = [:partial, :template, :layout, :formats, :locals, :object, :collection, :as]
+    ALL_KNOWN_KEYS = [:partial, :template, :layout, :formats, :locals, :object, :collection, :as, :status, :content_type, :location]
 
     def parse_render_from_options(options_hash)
       keys = options_hash.keys

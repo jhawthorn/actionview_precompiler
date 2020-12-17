@@ -222,6 +222,20 @@ module ActionviewPrecompiler
       assert_equal [:foo], renders[0].locals_keys
     end
 
+    def test_render_with_dynamic_layout_from_controller
+      renders = parse_render_calls(%q{render "site/index", layout: my_special_layout, locals: { foo: "bar" }}, from_controller: true)
+      assert_equal 1, renders.length
+      assert_equal "site/index", renders[0].virtual_path
+      assert_equal [:foo], renders[0].locals_keys
+    end
+
+    def test_render_with_status_from_controller
+      renders = parse_render_calls(%q{render "site/404", status: :not_found}, from_controller: true)
+      assert_equal 1, renders.length
+      assert_equal "site/404", renders[0].virtual_path
+      assert_equal [], renders[0].locals_keys
+    end
+
     private
 
     def parse_render_calls(code, **options)
