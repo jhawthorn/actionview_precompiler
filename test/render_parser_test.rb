@@ -237,12 +237,12 @@ module ActionviewPrecompiler
     end
 
     def test_render_with_spacer_template
-      renders = parse_render_calls(%q{render partial: "books/book", collection: books, spacer_template: "books/book_spacer"})
+      renders = parse_render_calls(%q{render partial: "books/book", collection: books, spacer_template: "books/book_spacer", locals: {foo: 123}})
       assert_equal 2, renders.length
-      assert_equal "books/_book", renders[0].virtual_path
-      assert_equal [:book, :book_counter, :book_iteration], renders[0].locals_keys
-      assert_equal "books/_book_spacer", renders[1].virtual_path
-      assert_equal [:book, :book_counter, :book_iteration], renders[1].locals_keys
+      assert_equal "books/_book_spacer", renders[0].virtual_path
+      assert_equal [:foo], renders[0].locals_keys
+      assert_equal "books/_book", renders[1].virtual_path
+      assert_equal [:foo, :book, :book_counter, :book_iteration], renders[1].locals_keys
     end
 
     private
