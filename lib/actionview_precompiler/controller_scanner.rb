@@ -37,7 +37,7 @@ module ActionviewPrecompiler
     private
 
     def each_controller
-      Dir["**/*_controller.rb", base: controller_dir].sort.map do |file|
+      Dir["**/*.rb", base: controller_dir].sort.map do |file|
         fullpath = File.expand_path(file, controller_dir)
         next if File.directory?(fullpath)
 
