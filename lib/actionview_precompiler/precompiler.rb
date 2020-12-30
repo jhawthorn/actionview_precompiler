@@ -5,13 +5,11 @@ require "actionview_precompiler/template_loader"
 
 module ActionviewPrecompiler
   class Precompiler
-    attr_accessor :no_locals_paths
-
     def initialize(verbose: false)
       @scanners = []
       @loader = TemplateLoader.new
       @verbose = verbose
-      @no_locals_paths = []
+      @static_templates = []
       @template_renders = nil
     end
 
@@ -25,6 +23,11 @@ module ActionviewPrecompiler
 
     def scan_helper_dir(controller_dir)
       @scanners << HelperScanner.new(controller_dir)
+    end
+
+    def add_template(virtual_path, locals = [])
+      locals = locals.map(&:to_s).sort
+      @static_templates << [virtual_path, locals]
     end
 
     def run
@@ -50,9 +53,7 @@ module ActionviewPrecompiler
         template_renders.concat scanner.template_renders
       end
 
-      no_locals_paths.each do |template|
-        template_renders << [template, []]
-      end
+      template_renders.concat @static_templates
 
       template_renders.uniq!
 

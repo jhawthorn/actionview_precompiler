@@ -29,11 +29,11 @@ module ActionviewPrecompiler
       assert_includes compiled_templates, "users/_user"
     end
 
-    def test_precompiles_no_locals_paths
+    def test_precompiles_static_paths
       reset_action_view!
 
       precompiler = Precompiler.new
-      precompiler.no_locals_paths = ["layouts/site"]
+      precompiler.add_template("layouts/site")
 
       compiled_templates = []
       callback = ->(name, start, finish, id, payload) do
