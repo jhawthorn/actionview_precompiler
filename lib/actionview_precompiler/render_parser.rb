@@ -72,7 +72,7 @@ module ActionviewPrecompiler
     def parse_layout(node)
       return nil unless from_controller?
 
-      template = parse_str(node.argument_nodes[0]) || parse_sym(node.argument_nodes[0])
+      template = parse_str(node.argument_nodes[0])
       return nil unless template
 
       virtual_path = layout_to_virtual_path(template)

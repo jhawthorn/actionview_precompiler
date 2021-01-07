@@ -96,6 +96,13 @@ module ActionviewPrecompiler
       assert_equal 0, renders.length
     end
 
+    def test_ignores_layout_when_symbol
+      renders = parse_render_calls(%q{render partial: "users/user", layout: :foobar, locals: { buzz: true }})
+      assert_equal 1, renders.length
+      assert_equal ["users/_user"], renders.map(&:virtual_path)
+      assert_equal [[:buzz]], renders.map(&:locals_keys)
+    end
+
     def test_finds_simple_render_with_locals
       renders = parse_render_calls(%q{render "users/user", user: @user})
       assert_equal 1, renders.length
@@ -201,11 +208,9 @@ module ActionviewPrecompiler
       assert_equal [], renders[0].locals_keys
     end
 
-    def test_layout_with_symbol_from_controller
+    def test_layout_ignores_symbols_from_controller
       renders = parse_render_calls(%q{layout :foobar }, from_controller: true)
-      assert_equal 1, renders.length
-      assert_equal "layouts/foobar", renders[0].virtual_path
-      assert_equal [], renders[0].locals_keys
+      assert_equal 0, renders.length
     end
 
     def test_render_with_layout_from_controller

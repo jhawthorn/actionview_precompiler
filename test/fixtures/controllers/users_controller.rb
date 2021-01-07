@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
 
-  layout :site
+  layout "site"
 
   def show
     render "show"
