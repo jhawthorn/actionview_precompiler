@@ -1,6 +1,6 @@
 # ActionviewPrecompiler
 
-Provides eager loading of ActionView templates.
+Provides eager loading of Action View templates.
 
 This optimization aims to improve cold render times and to allow more memory to be shared via CoW on forking web servers.
 
@@ -31,7 +31,7 @@ We determine the locals passed to each template by parsing all templates looking
 Right now this assumes every template with the same `virtual_path` takes the same locals (there may be smarter options, we just aren't doing them).
 A curse/blessing/actually still a curse of this approach is that mis-predicting render calls doesn't cause any issues, it just wastes RAM.
 
-Templates are half-compiled using standard ActionView handlers, so this should work for erb/builder/haml/whatever.
+Templates are half-compiled using standard Action View handlers, so this should work for erb/builder/haml/whatever.
 Parsing is done using either Ruby 2.6's `RubyVM::AbstractSyntaxTree` or JRuby's parser.
 
 ## Installation
