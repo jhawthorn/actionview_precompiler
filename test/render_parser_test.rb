@@ -110,6 +110,41 @@ module ActionviewPrecompiler
       assert_equal [:user], renders[0].locals_keys
     end
 
+    def test_finds_render_with_instance_variables
+      renders = parse_render_calls(%q{render @user})
+      assert_equal 1, renders.length
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [:user], renders[0].locals_keys
+    end
+
+    def test_finds_render_with_global_variables
+      renders = parse_render_calls(%q{render $user})
+      assert_equal 1, renders.length
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [:user], renders[0].locals_keys
+    end
+
+    def test_finds_render_with_class_variables
+      renders = parse_render_calls(%q{render @@user})
+      assert_equal 1, renders.length
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [:user], renders[0].locals_keys
+    end
+
+    def test_finds_render_with_local_variables
+      renders = parse_render_calls(%q{render user})
+      assert_equal 1, renders.length
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [:user], renders[0].locals_keys
+    end
+
+    def test_finds_render_with_method_call
+      renders = parse_render_calls(%q{render user.posts})
+      assert_equal 1, renders.length
+      assert_equal "posts/_post", renders[0].virtual_path
+      assert_equal [:post], renders[0].locals_keys
+    end
+
     def test_finds_simple_render_hash_with_empty_locals
       renders = parse_render_calls(%q{render partial: "users/user", locals: { } })
       assert_equal 1, renders.length

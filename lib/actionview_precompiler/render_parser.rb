@@ -51,7 +51,7 @@ module ActionviewPrecompiler
 
     def parse_render(node)
       node = node.argument_nodes
-      if (node.length == 1 || node.length == 2) && node[0].string?
+      if (node.length == 1 || node.length == 2) && !node[0].hash?
         if node.length == 1
           options = normalize_args(node[0], nil)
         elsif node.length == 2
@@ -117,7 +117,24 @@ module ActionviewPrecompiler
       end
 
       render_type = (keys & render_type_keys)[0]
-      template = parse_str(options_hash[render_type])
+
+      node = options_hash[render_type]
+      if node.string?
+        template = node.to_string
+      else
+        if node.variable_reference?
+          dependency = node.variable_name.sub(/\A(?:\$|@{1,2})/, "")
+        elsif node.vcall?
+          dependency = node.variable_name
+        elsif node.call?
+          dependency = node.call_method_name
+        else
+          return
+        end
+        object_template = true
+        template = "#{dependency.pluralize}/#{dependency.singularize}"
+      end
+
       return unless template
 
       if options_hash.key?(:locals)
@@ -139,7 +156,7 @@ module ActionviewPrecompiler
         renders << RenderCall.new(virtual_path, locals_keys.dup)
       end
 
-      if options_hash.key?(:object) || options_hash.key?(:collection)
+      if options_hash.key?(:object) || options_hash.key?(:collection) || object_template
         return nil if options_hash.key?(:object) && options_hash.key?(:collection)
         return nil unless options_hash.key?(:partial)
 

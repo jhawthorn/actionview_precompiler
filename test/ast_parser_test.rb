@@ -12,6 +12,11 @@ module ActionviewPrecompiler
       assert parse_render_nodes(code).size == 1
     end
 
+    def test_can_parse_render_instance_variable
+      code = 'render @foo'
+      assert parse_render_nodes(code).size == 1
+    end
+
     def parse_render_nodes(code)
       ASTParser.parse_render_nodes(code)
     end
