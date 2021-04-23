@@ -41,6 +41,26 @@ module ActionviewPrecompiler
         type == :string_literal
       end
 
+      def variable_reference?
+        type == :var_ref
+      end
+
+      def vcall?
+        type == :vcall
+      end
+
+      def call?
+        type == :call
+      end
+
+      def variable_name
+        self[0][0]
+      end
+
+      def call_method_name
+        self.last.first
+      end
+
       def to_string
         raise unless string?
         raise "fixme" unless self[0].type == :string_content

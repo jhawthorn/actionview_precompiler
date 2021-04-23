@@ -53,6 +53,26 @@ module ActionviewPrecompiler
         type == :STR && String === children[0]
       end
 
+      def variable_reference?
+        type == :IVAR || type == :GVAR || type == :CVAR
+      end
+
+      def variable_name
+        children[0].to_s
+      end
+
+      def vcall?
+        type == :VCALL
+      end
+
+      def call?
+        type == :CALL
+      end
+
+      def call_method_name
+        children[1].to_s
+      end
+
       def symbol?
         type == :LIT && Symbol === children[0]
       end

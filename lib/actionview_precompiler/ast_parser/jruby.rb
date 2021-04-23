@@ -25,6 +25,28 @@ module ActionviewPrecompiler
       def string?; org::jruby::ast::StrNode    === @node; end
       def symbol?; org::jruby::ast::SymbolNode === @node; end
 
+      def variable_reference?
+        org::jruby::ast::InstVarNode === @node ||
+          org::jruby::ast::GlobalVarNode === @node ||
+          org::jruby::ast::ClassVarNode === @node
+      end
+
+      def vcall?
+        org::jruby::ast::VCallNode === @node;
+      end
+
+      def call?
+        org::jruby::ast::CallNode === @node;
+      end
+
+      def variable_name
+        self[0][0]
+      end
+
+      def call_method_name
+        self.last.first
+      end
+
       def argument_nodes
         @node.args_node.children.to_a[0...@node.args_node.size].map do |arg|
           self.class.wrap(arg)
@@ -40,6 +62,14 @@ module ActionviewPrecompiler
 
       def to_string
         @node.value
+      end
+
+      def variable_name
+        @node.name.to_s
+      end
+
+      def call_method_name
+        @node.name.to_s
       end
 
       def to_symbol
