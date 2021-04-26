@@ -34,7 +34,11 @@ module ActionviewPrecompiler
       def argument_nodes
         raise unless fcall?
         return [] if self[1].nil?
-        self[1][0...-1]
+        if self[1].last == false || self[1].last.type == :vcall
+          self[1][0...-1]
+        else
+          self[1][0..-1]
+        end
       end
 
       def string?
