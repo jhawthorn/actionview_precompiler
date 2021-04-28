@@ -77,6 +77,14 @@ module ActionviewPrecompiler
       assert_equal [], render.locals_keys
     end
 
+    def test_find_renders_with_block
+      renders = parse_render_calls(%q{render("discussions/sidebar", discussion: discussion) {} })
+
+      assert_equal 1, renders.length
+      assert_equal "discussions/_sidebar", renders[0].virtual_path
+      assert_equal [:discussion], renders[0].locals_keys
+    end
+
     def test_render_partial_with_layout
       renders = parse_render_calls(%q{render partial: "users/user", layout: "foobar", locals: { buzz: true }})
       assert_equal 2, renders.length
@@ -129,6 +137,14 @@ module ActionviewPrecompiler
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
+    end
+
+    def test_finds_renders_with_trailing_comma
+      renders = parse_render_calls(%q{render("discussions/sidebar", discussion: discussion,)})
+
+      assert_equal 1, renders.length
+      assert_equal "discussions/_sidebar", renders[0].virtual_path
+      assert_equal [:discussion], renders[0].locals_keys
     end
 
     def test_finds_render_with_local_variables
