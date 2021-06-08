@@ -182,6 +182,10 @@ module ActionviewPrecompiler
       def on_arg_paren(content)
         content
       end
+
+      def on_paren(content)
+        content
+      end
     end
 
     extend self

@@ -139,6 +139,20 @@ module ActionviewPrecompiler
       assert_equal [:user], renders[0].locals_keys
     end
 
+    def test_finds_render_with_method_on_instance_variable
+      renders = parse_render_calls(%q{render @user.events})
+      assert_equal 1, renders.length
+      assert_equal "events/_event", renders[0].virtual_path
+      assert_equal [:event], renders[0].locals_keys
+    end
+
+    def test_finds_render_with_extra_whitespace
+      renders = parse_render_calls(%q{render ( @message.events )})
+      assert_equal 1, renders.length
+      assert_equal "events/_event", renders[0].virtual_path
+      assert_equal [:event], renders[0].locals_keys
+    end
+
     def test_finds_renders_with_trailing_comma
       renders = parse_render_calls(%q{render("discussions/sidebar", discussion: discussion,)})
 
