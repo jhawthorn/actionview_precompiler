@@ -7,7 +7,7 @@ module ActionviewPrecompiler
       assert_equal "show.html.erb", template.basename
       assert_kind_of ActionView::Template::Handlers::ERB, template.handler
 
-      renders =  template.render_calls
+      renders = template.render_calls
       assert_equal 3, renders.length
       assert_equal ["users/_user", "users/_description", "users/_foo"], renders.map(&:virtual_path)
       assert_equal [[:user], [:bar], [:bar]], renders.map(&:locals_keys)

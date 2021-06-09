@@ -2,7 +2,8 @@ module ActionviewPrecompiler
   RenderCall = Struct.new(:virtual_path, :locals_keys)
 
   class RenderParser
-    def initialize(code, parser: ASTParser, from_controller: false)
+    def initialize(template_name, code, parser: ASTParser, from_controller: false)
+      @template_name = template_name
       @code = code
       @parser = parser
       @from_controller = from_controller
@@ -93,6 +94,18 @@ module ActionviewPrecompiler
       end
     end
 
+    def directory
+      @template_name.split("/")[0..-2].join("/")
+    end
+
+    def resolve_path_directory(path)
+      if path.match?("/")
+        path
+      else
+        "#{directory}/#{path}"
+      end
+    end
+
     ALL_KNOWN_KEYS = [:partial, :template, :layout, :formats, :locals, :object, :collection, :as, :status, :content_type, :location, :spacer_template]
 
     def parse_render_from_options(options_hash)
@@ -120,7 +133,11 @@ module ActionviewPrecompiler
 
       node = options_hash[render_type]
       if node.string?
-        template = node.to_string
+        if @from_controller
+          template = node.to_string
+        else
+          template = resolve_path_directory(node.to_string)
+        end
       else
         if node.variable_reference?
           dependency = node.variable_name.sub(/\A(?:\$|@{1,2})/, "")
