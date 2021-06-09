@@ -7,7 +7,7 @@ module ActionviewPrecompiler
     def render_calls
       src = File.read(@filename)
       return [] unless src.include?("render")
-      RenderParser.new(src, from_controller: true).render_calls
+      RenderParser.new(@filename, src, from_controller: true).render_calls
     end
   end
 end

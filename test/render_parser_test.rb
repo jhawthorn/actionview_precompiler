@@ -3,23 +3,23 @@ require "test_helper"
 module ActionviewPrecompiler
   module RenderParserTests
     def test_finds_no_renders
-      assert_equal [], parse_render_calls("x = x = 1 + 1")
+      assert_equal [], parse_render_calls("index.html.erb", "x = x = 1 + 1")
     end
 
     def test_finds_no_renders_from_invalid_calls
-      assert_equal [], parse_render_calls(%q{render()})
-      assert_equal [], parse_render_calls(%q{render(123)})
-      assert_equal [], parse_render_calls(%q{render("foo", 123)})
-      assert_equal [], parse_render_calls(%q{render("foo", {}, {})})
-      assert_equal [], parse_render_calls(%q{render("foo", locals)})
-      assert_equal [], parse_render_calls(%q{render("foo", **locals)})
-      assert_equal [], parse_render_calls(%q{render("foo", { **locals })})
-      assert_equal [], parse_render_calls(%q{render("foo", name: "John", **locals)})
-      assert_equal [], parse_render_calls(%q{render(partial: "foo", **options)})
+      assert_equal [], parse_render_calls("index.html.erb", %q{render()})
+      assert_equal [], parse_render_calls("index.html.erb", %q{render(123)})
+      assert_equal [], parse_render_calls("index.html.erb", %q{render("foo", 123)})
+      assert_equal [], parse_render_calls("index.html.erb", %q{render("foo", {}, {})})
+      assert_equal [], parse_render_calls("index.html.erb", %q{render("foo", locals)})
+      assert_equal [], parse_render_calls("index.html.erb", %q{render("foo", **locals)})
+      assert_equal [], parse_render_calls("index.html.erb", %q{render("foo", { **locals })})
+      assert_equal [], parse_render_calls("index.html.erb", %q{render("foo", name: "John", **locals)})
+      assert_equal [], parse_render_calls("index.html.erb", %q{render(partial: "foo", **options)})
     end
 
     def test_finds_simple_render
-      renders = parse_render_calls(%q{render "users/user"})
+      renders = parse_render_calls("users/show.html.erb", %q{render "users/user"})
       assert_equal 1, renders.length
       render = renders[0]
       assert_equal "users/_user", render.virtual_path
@@ -27,7 +27,7 @@ module ActionviewPrecompiler
     end
 
     def test_finds_simple_render_hash
-      renders = parse_render_calls(%q{render partial: "users/user"})
+      renders = parse_render_calls("users/show.html.erb", %q{render partial: "users/user"})
       assert_equal 1, renders.length
       render = renders[0]
       assert_equal "users/_user", render.virtual_path
@@ -35,7 +35,7 @@ module ActionviewPrecompiler
     end
 
     def test_finds_simple_render_hash_explicit
-      renders = parse_render_calls(%q{render({partial: "users/user"})})
+      renders = parse_render_calls("users/show.html.erb", %q{render({partial: "users/user"})})
       assert_equal 1, renders.length
       render = renders[0]
       assert_equal "users/_user", render.virtual_path
@@ -43,7 +43,7 @@ module ActionviewPrecompiler
     end
 
     def test_finds_render_template
-      renders = parse_render_calls(%q{render template: "users/show"})
+      renders = parse_render_calls("users/index.html.erb", %q{render template: "users/show"})
       assert_equal 1, renders.length
       render = renders[0]
       assert_equal "users/show", render.virtual_path
@@ -51,7 +51,7 @@ module ActionviewPrecompiler
     end
 
     def test_finds_render_layout
-      renders = parse_render_calls(%q{render layout: "users/user_layout"})
+      renders = parse_render_calls("users/show.html.erb", %q{render layout: "users/user_layout"})
       assert_equal 1, renders.length
       render = renders[0]
       assert_equal "users/_user_layout", render.virtual_path
@@ -59,7 +59,7 @@ module ActionviewPrecompiler
     end
 
     def test_finds_render_layout_with_block
-      renders = parse_render_calls(<<~RUBY)
+      renders = parse_render_calls("users/index.html.erb", <<~RUBY)
         render layout: "users/user_layout" do
         end
       RUBY
@@ -70,7 +70,7 @@ module ActionviewPrecompiler
     end
 
     def test_finds_render_layout_with_ampersand_proc
-      renders = parse_render_calls(%q{render layout: "users/user_layout", &my_proc})
+      renders = parse_render_calls("usersindex.html.erb", %q{render layout: "users/user_layout", &my_proc})
       assert_equal 1, renders.length
       render = renders[0]
       assert_equal "users/_user_layout", render.virtual_path
@@ -78,7 +78,7 @@ module ActionviewPrecompiler
     end
 
     def test_find_renders_with_block
-      renders = parse_render_calls(%q{render("discussions/sidebar", discussion: discussion) {} })
+      renders = parse_render_calls("discussions/index.html.erb", %q{render("discussions/sidebar", discussion: discussion) {} })
 
       assert_equal 1, renders.length
       assert_equal "discussions/_sidebar", renders[0].virtual_path
@@ -86,75 +86,75 @@ module ActionviewPrecompiler
     end
 
     def test_render_partial_with_layout
-      renders = parse_render_calls(%q{render partial: "users/user", layout: "foobar", locals: { buzz: true }})
+      renders = parse_render_calls("users/_index.html.erb", %q{render partial: "users/user", layout: "foobar", locals: { buzz: true }})
       assert_equal 2, renders.length
       assert_equal ["users/_user", "users/_foobar"], renders.map(&:virtual_path)
       assert_equal [[:buzz], [:buzz]], renders.map(&:locals_keys)
     end
 
     def test_render_partial_with_layout_in_different_directory
-      renders = parse_render_calls(%q{render partial: "users/user", layout: "foo/bar", locals: { buzz: true }})
+      renders = parse_render_calls("users/show.html.erb", %q{render partial: "users/user", layout: "foo/bar", locals: { buzz: true }})
       assert_equal 2, renders.length
       assert_equal ["users/_user", "foo/_bar"], renders.map(&:virtual_path)
       assert_equal [[:buzz], [:buzz]], renders.map(&:locals_keys)
     end
 
     def test_ignores_layout_outside_of_render_calls
-      renders = parse_render_calls(%q{layout "foobar" }, from_controller: false)
+      renders = parse_render_calls("index.html.erb", %q{layout "foobar" }, from_controller: false)
       assert_equal 0, renders.length
     end
 
     def test_ignores_layout_when_symbol
-      renders = parse_render_calls(%q{render partial: "users/user", layout: :foobar, locals: { buzz: true }})
+      renders = parse_render_calls("users/index.html.erb", %q{render partial: "users/user", layout: :foobar, locals: { buzz: true }})
       assert_equal 1, renders.length
       assert_equal ["users/_user"], renders.map(&:virtual_path)
       assert_equal [[:buzz]], renders.map(&:locals_keys)
     end
 
     def test_finds_simple_render_with_locals
-      renders = parse_render_calls(%q{render "users/user", user: @user})
+      renders = parse_render_calls("users/show.html.erb", %q{render "users/user", user: @user})
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
 
     def test_finds_render_with_instance_variables
-      renders = parse_render_calls(%q{render @user})
+      renders = parse_render_calls("users/index.html.erb", %q{render @user})
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
 
     def test_finds_render_with_global_variables
-      renders = parse_render_calls(%q{render $user})
+      renders = parse_render_calls("users/index.html.erb", %q{render $user})
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
 
     def test_finds_render_with_class_variables
-      renders = parse_render_calls(%q{render @@user})
+      renders = parse_render_calls("users/index.html.erb", %q{render @@user})
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
 
     def test_finds_render_with_method_on_instance_variable
-      renders = parse_render_calls(%q{render @user.events})
+      renders = parse_render_calls("events/index.html.erb", %q{render @user.events})
       assert_equal 1, renders.length
       assert_equal "events/_event", renders[0].virtual_path
       assert_equal [:event], renders[0].locals_keys
     end
 
     def test_finds_render_with_extra_whitespace
-      renders = parse_render_calls(%q{render ( @message.events )})
+      renders = parse_render_calls("events/index.html.erb", %q{render ( @message.events )})
       assert_equal 1, renders.length
       assert_equal "events/_event", renders[0].virtual_path
       assert_equal [:event], renders[0].locals_keys
     end
 
     def test_finds_renders_with_trailing_comma
-      renders = parse_render_calls(%q{render("discussions/sidebar", discussion: discussion,)})
+      renders = parse_render_calls("discussions/index.html.erb", %q{render("discussions/sidebar", discussion: discussion,)})
 
       assert_equal 1, renders.length
       assert_equal "discussions/_sidebar", renders[0].virtual_path
@@ -162,152 +162,152 @@ module ActionviewPrecompiler
     end
 
     def test_finds_render_with_local_variables
-      renders = parse_render_calls(%q{render user})
+      renders = parse_render_calls("whatever/index.html.erb", %q{render user})
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
 
     def test_finds_render_with_method_call
-      renders = parse_render_calls(%q{render user.posts})
+      renders = parse_render_calls("users/index.html.erb", %q{render user.posts})
       assert_equal 1, renders.length
       assert_equal "posts/_post", renders[0].virtual_path
       assert_equal [:post], renders[0].locals_keys
     end
 
     def test_finds_simple_render_hash_with_empty_locals
-      renders = parse_render_calls(%q{render partial: "users/user", locals: { } })
+      renders = parse_render_calls("users/index.html.erb", %q{render partial: "users/user", locals: { } })
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [], renders[0].locals_keys
     end
 
     def test_finds_simple_render_hash_with_locals
-      renders = parse_render_calls(%q{render partial: "users/user", locals: { user: @user } })
+      renders = parse_render_calls("users/index.html.erb", %q{render partial: "users/user", locals: { user: @user } })
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
 
     def test_render_object
-      renders = parse_render_calls(%q{render partial: "users/user", object: @user })
+      renders = parse_render_calls("users/index.html.erb", %q{render partial: "users/user", object: @user })
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
 
     def test_render_object_as
-      renders = parse_render_calls(%q{render partial: "users/user", object: @user, as: :customer })
+      renders = parse_render_calls("users/index.html.erb", %q{render partial: "users/user", object: @user, as: :customer })
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:customer], renders[0].locals_keys
     end
 
     def test_render_object_and_locals
-      renders = parse_render_calls(%q{render partial: "users/user", object: @user, locals: { admin: true } })
+      renders = parse_render_calls("users/index.html.erb", %q{render partial: "users/user", object: @user, locals: { admin: true } })
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:admin, :user], renders[0].locals_keys
     end
 
     def test_render_collection
-      renders = parse_render_calls(%q{render partial: "users/user", collection: @users })
+      renders = parse_render_calls("users/index.html.erb", %q{render partial: "users/user", collection: @users })
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user, :user_counter, :user_iteration], renders[0].locals_keys
     end
 
     def test_render_collection_as
-      renders = parse_render_calls(%q{render partial: "users/user", collection: @users, as: :customer })
+      renders = parse_render_calls("users/index.html.erb", %q{render partial: "users/user", collection: @users, as: :customer })
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:customer, :customer_counter, :customer_iteration], renders[0].locals_keys
     end
 
     def test_render_collection_and_locals
-      renders = parse_render_calls(%q{render partial: "users/user", collection: @users, locals: { admin: true } })
+      renders = parse_render_calls("users/index.html.erb", %q{render partial: "users/user", collection: @users, locals: { admin: true } })
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:admin, :user, :user_counter, :user_iteration], renders[0].locals_keys
     end
 
     def test_render_from_controller
-      renders = parse_render_calls(%q{render "users/show"}, from_controller: true)
+      renders = parse_render_calls("users/index.html.erb", %q{render "users/show"}, from_controller: true)
       assert_equal 1, renders.length
       assert_equal "users/show", renders[0].virtual_path
       assert_equal [], renders[0].locals_keys
     end
 
     def test_render_partial_from_controller
-      renders = parse_render_calls(%q{render partial: "users/user"}, from_controller: true)
+      renders = parse_render_calls("users/index.html.erb", %q{render partial: "users/user"}, from_controller: true)
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [], renders[0].locals_keys
     end
 
     def test_render_with_locals_from_controller
-      renders = parse_render_calls(%q{render "users/show", locals: { user: user }}, from_controller: true)
+      renders = parse_render_calls("users/index.html.erb", %q{render "users/show", locals: { user: user }}, from_controller: true)
       assert_equal 1, renders.length
       assert_equal "users/show", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
 
     def test_render_partial_with_locals_from_controller
-      renders = parse_render_calls(%q{render partial: "users/user", locals: { user: user }}, from_controller: true)
+      renders = parse_render_calls("users/index.html.erb", %q{render partial: "users/user", locals: { user: user }}, from_controller: true)
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
 
     def test_render_to_string
-      renders = parse_render_calls(%q{render_to_string(partial: "users/user", locals: { user: user })}, from_controller: true)
+      renders = parse_render_calls("users/index.html.erb", %q{render_to_string(partial: "users/user", locals: { user: user })}, from_controller: true)
       assert_equal 1, renders.length
       assert_equal "users/_user", renders[0].virtual_path
       assert_equal [:user], renders[0].locals_keys
     end
 
     def test_layout_from_controller
-      renders = parse_render_calls(%q{layout "foobar" }, from_controller: true)
+      renders = parse_render_calls("users/index.html.erb", %q{layout "foobar" }, from_controller: true)
       assert_equal 1, renders.length
       assert_equal "layouts/foobar", renders[0].virtual_path
       assert_equal [], renders[0].locals_keys
     end
 
     def test_layout_ignores_symbols_from_controller
-      renders = parse_render_calls(%q{layout :foobar }, from_controller: true)
+      renders = parse_render_calls("index.html.erb", %q{layout :foobar }, from_controller: true)
       assert_equal 0, renders.length
     end
 
     def test_render_with_layout_from_controller
-      renders = parse_render_calls(%q{render "site/index", layout: "site", locals: { foo: "bar" }}, from_controller: true)
+      renders = parse_render_calls("index.html.erb", %q{render "site/index", layout: "site", locals: { foo: "bar" }}, from_controller: true)
       assert_equal 2, renders.length
       assert_equal ["site/index", "layouts/site"], renders.map(&:virtual_path)
       assert_equal [[:foo], [:foo]], renders.map(&:locals_keys)
     end
 
     def test_render_with_layout_bool_from_controller
-      renders = parse_render_calls(%q{render "site/index", layout: false, locals: { foo: "bar" }}, from_controller: true)
+      renders = parse_render_calls("site/index.html.erb", %q{render "site/index", layout: false, locals: { foo: "bar" }}, from_controller: true)
       assert_equal 1, renders.length
       assert_equal "site/index", renders[0].virtual_path
       assert_equal [:foo], renders[0].locals_keys
     end
 
     def test_render_with_dynamic_layout_from_controller
-      renders = parse_render_calls(%q{render "site/index", layout: my_special_layout, locals: { foo: "bar" }}, from_controller: true)
+      renders = parse_render_calls("site/index.html.erb", %q{render "site/index", layout: my_special_layout, locals: { foo: "bar" }}, from_controller: true)
       assert_equal 1, renders.length
       assert_equal "site/index", renders[0].virtual_path
       assert_equal [:foo], renders[0].locals_keys
     end
 
     def test_render_with_status_from_controller
-      renders = parse_render_calls(%q{render "site/404", status: :not_found}, from_controller: true)
+      renders = parse_render_calls("site/index.html.erb", %q{render "site/404", status: :not_found}, from_controller: true)
       assert_equal 1, renders.length
       assert_equal "site/404", renders[0].virtual_path
       assert_equal [], renders[0].locals_keys
     end
 
     def test_render_with_spacer_template
-      renders = parse_render_calls(%q{render partial: "books/book", collection: books, spacer_template: "books/book_spacer", locals: {foo: 123}})
+      renders = parse_render_calls("books/index.html.erb", %q{render partial: "books/book", collection: books, spacer_template: "books/book_spacer", locals: {foo: 123}})
       assert_equal 2, renders.length
       assert_equal "books/_book_spacer", renders[0].virtual_path
       assert_equal [:foo], renders[0].locals_keys
@@ -315,10 +315,16 @@ module ActionviewPrecompiler
       assert_equal [:foo, :book, :book_counter, :book_iteration], renders[1].locals_keys
     end
 
+    def test_render_with_template_in_directory
+      renders = parse_render_calls("fiction_books/index.html.erb", %q{render partial: "book"})
+      assert_equal 1, renders.length
+      assert_equal "fiction_books/_book", renders[0].virtual_path
+    end
+
     private
 
-    def parse_render_calls(code, **options)
-      RenderParser.new(code, parser: self.class::Parser, **options).render_calls
+    def parse_render_calls(name, code, **options)
+      RenderParser.new(name, code, parser: self.class::Parser, **options).render_calls
     end
   end
 
