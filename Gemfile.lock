@@ -120,6 +120,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.11.4-java)
       racc (~> 1.4)
+    prettier_print (1.0.2)
     pry (0.13.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -147,6 +148,8 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
+    syntax_tree (4.2.0)
+      prettier_print (>= 1.0.2)
     thor (1.1.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
@@ -168,6 +171,7 @@ DEPENDENCIES
   pry
   rails!
   rake (~> 12.0)
+  syntax_tree
 
 BUNDLED WITH
    2.2.3
