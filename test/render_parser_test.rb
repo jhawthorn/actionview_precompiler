@@ -329,6 +329,13 @@ module ActionviewPrecompiler
     Parser = RipperASTParser
   end
 
+  class SyntaxTreeASTParserTest < Minitest::Test
+    include RenderParserTests
+
+    require "actionview_precompiler/ast_parser/syntax_tree"
+    Parser = SyntaxTreeASTParser
+  end
+
   if RUBY_ENGINE == "ruby"
     class RubyASTRenderParserTest < Minitest::Test
       include RenderParserTests

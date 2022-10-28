@@ -33,6 +33,10 @@ module ActionviewPrecompiler
         node.is_a?(SyntaxTree::Call)
       end
 
+      def call_method_name
+        node.message.value
+      end
+
       def hash?
         node.is_a?(SyntaxTree::HashLiteral) || node.is_a?(SyntaxTree::BareAssocHash)
       end
@@ -47,6 +51,10 @@ module ActionviewPrecompiler
 
       def variable_reference?
         node.is_a?(SyntaxTree::VarRef)
+      end
+
+      def variable_name
+        node.value.value
       end
 
       def vcall?
