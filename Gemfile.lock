@@ -98,7 +98,7 @@ GEM
     concurrent-ruby (1.1.8)
     crass (1.0.6)
     erubi (1.10.0)
-    ffi (1.13.1-java)
+    ffi (1.15.5-java)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     i18n (1.8.10)
@@ -121,10 +121,10 @@ GEM
     nokogiri (1.11.4-java)
       racc (~> 1.4)
     prettier_print (1.0.2)
-    pry (0.13.1)
+    pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    pry (0.13.1-java)
+    pry (0.14.1-java)
       coderay (~> 1.1)
       method_source (~> 1.0)
       spoon (~> 0.0)
@@ -148,7 +148,7 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
-    syntax_tree (4.2.0)
+    syntax_tree (4.3.0)
       prettier_print (>= 1.0.2)
     thor (1.1.0)
     tzinfo (2.0.4)
@@ -168,7 +168,7 @@ DEPENDENCIES
   actionview_precompiler!
   bundler (~> 2.1)
   minitest (~> 5.0)
-  pry
+  pry (>= 0.14.1)
   rails!
   rake (~> 12.0)
   syntax_tree
