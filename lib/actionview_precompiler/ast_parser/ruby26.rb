@@ -134,12 +134,18 @@ module ActionviewPrecompiler
       node.fcall_named?(name)
     end
 
-    def extract_render_nodes(node)
-      return [] unless node?(node)
-      renders = node.children.flat_map { |c| extract_render_nodes(c) }
+    def extract_render_nodes(root)
+      renders = []
+      queue = [root]
 
-      is_render, method = render_call?(node)
-      renders << [method, node] if is_render
+      while node = queue.shift
+        node.children.each do |child|
+          queue << child if node?(child)
+        end
+
+        is_render, method = render_call?(node)
+        renders << [method, node] if is_render
+      end
 
       renders
     end
