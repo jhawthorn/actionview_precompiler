@@ -7,8 +7,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby_version: ["2.7", "head"]
-        rails_version: ["main", "6-0-stable", "6-1-stable"]
+        ruby_version: ["3.0", "head"]
+        rails_version: ["main", "6-1-stable", "7-0-stable"]
     runs-on: ubuntu-latest
     name: Test on ${{ matrix.ruby_version }} with Rails ${{ matrix.rails_version }}
     steps:
@@ -33,7 +33,7 @@ jobs:
       fail-fast: false
       matrix:
         ruby_version: ["jruby"]
-        rails_version: ["6-0-stable", "6-1-stable"]
+        rails_version: ["6-1-stable", "7-0-stable"]
     runs-on: ubuntu-latest
     name: Test on ${{ matrix.ruby_version }} with Rails ${{ matrix.rails_version }}
     steps:
