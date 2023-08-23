@@ -143,16 +143,15 @@ module ActionviewPrecompiler
           queue << child if node?(child)
         end
 
-        is_render, method = render_call?(node)
-        renders << [method, node] if is_render
+        method_name = render_call?(node)
+        renders << [method_name, node] if method_name
       end
 
       renders
     end
 
     def render_call?(node)
-      METHODS_TO_PARSE.each { |m| return [true, m] if fcall?(node, m) }
-      false
+      METHODS_TO_PARSE.detect { |m| fcall?(node, m) }
     end
   end
 end
