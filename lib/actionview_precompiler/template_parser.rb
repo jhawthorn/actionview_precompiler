@@ -29,7 +29,7 @@ module ActionviewPrecompiler
       src = File.read(@filename)
       if src.include?("render")
         compiled_source = @handler.call(FakeTemplate.new, File.read(@filename))
-        RenderParser.new(compiled_source).render_calls
+        RenderParser.new(@filename, compiled_source).render_calls
       else
         []
       end
