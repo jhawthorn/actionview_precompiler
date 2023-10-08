@@ -336,6 +336,13 @@ module ActionviewPrecompiler
       require "actionview_precompiler/ast_parser/ruby26"
       Parser = Ruby26ASTParser
     end
+
+    class SyntaxTreeASTRenderParserTest < Minitest::Test
+      include RenderParserTests
+
+      require "actionview_precompiler/ast_parser/syntax_tree"
+      Parser = SyntaxTreeASTParser
+    end
   end
 
   if RUBY_ENGINE == "jruby"

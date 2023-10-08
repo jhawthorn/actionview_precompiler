@@ -30,7 +30,7 @@ module ActionviewPrecompiler
       end
 
       def call?
-        node.is_a?(SyntaxTree::Call)
+        node.is_a?(SyntaxTree::CallNode)
       end
 
       def hash?
@@ -53,12 +53,22 @@ module ActionviewPrecompiler
         node.is_a?(SyntaxTree::VCall)
       end
 
+      def call_method_name
+        node.message.value
+      end
+
+      def variable_name
+        node.value.value
+      end
+
       # Converts the node into a hash where the keys and values are nodes. This
       # will raise an error if the hash doesn't match the format we expect or
       # if the hash contains any splats.
       def to_hash
-        if hash? && node.assocs.all? { |assoc| assoc.is_a?(SyntaxTree::Assoc) }
-          node.assocs.to_h { |assoc| [RenderNode.new(assoc.key), RenderNode.new(assoc.value)] }
+        if hash?
+          if node.assocs.all? { |assoc| assoc.is_a?(SyntaxTree::Assoc) }
+            node.assocs.to_h { |assoc| [RenderNode.new(assoc.key), RenderNode.new(assoc.value)] }
+          end
         else
           raise CompilationError, "Unexpected node type: #{node.class.name}"
         end
@@ -89,7 +99,7 @@ module ActionviewPrecompiler
             raise CompilationError, "Unexpected symbol value type: #{node.value.inspect}"
           end
 
-          node.value.to_sym
+          node.value.value.to_sym
         else
           raise CompilationError, "Unexpected node type: #{node.class.name}"
         end
@@ -112,8 +122,7 @@ module ActionviewPrecompiler
         if node.message.is_a?(SyntaxTree::Ident) &&
            node.message.value.match?(MESSAGE) &&
            node.arguments.is_a?(SyntaxTree::Args)
-          argument_nodes = node.arguments.parts.map { |part| RenderNode.new(part) }
-          render_calls[node.message.value.to_sym] << RenderCall.new(argument_nodes)
+          render_call(node, node.arguments)
         end
 
         super
@@ -124,11 +133,26 @@ module ActionviewPrecompiler
            node.message.value.match?(MESSAGE) &&
            node.arguments.is_a?(SyntaxTree::ArgParen) &&
            node.arguments.arguments.is_a?(SyntaxTree::Args)
-          argument_nodes = node.arguments.arguments.parts.map { |part| RenderNode.new(part) }
-          render_calls[node.message.value.to_sym] << RenderCall.new(argument_nodes)
+          render_call(node, node.arguments.arguments)
         end
 
         super
+      end
+
+      private
+
+      def render_call(node, arguments)
+        render_nodes =
+          arguments.parts.map do |part|
+            if part.is_a?(SyntaxTree::Paren) && !part.contents.is_a?(SyntaxTree::Statements)
+              RenderNode.new(part.contents)
+            else
+              RenderNode.new(part)
+            end
+          end
+
+        render_nodes.pop if arguments.parts.last.is_a?(SyntaxTree::ArgBlock)
+        render_calls[node.message.value.to_sym] << RenderCall.new(render_nodes)
       end
     end
 
