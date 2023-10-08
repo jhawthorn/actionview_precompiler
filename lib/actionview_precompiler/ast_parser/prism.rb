@@ -59,12 +59,28 @@ module ActionviewPrecompiler
         node.is_a?(Prism::CallNode) && node.variable_call?
       end
 
+      def call_method_name
+        node.message
+      end
+
+      def variable_name
+        case node.type
+        when :class_variable_read_node, :instance_variable_read_node,
+             :global_variable_read_node, :local_variable_read_node
+          node.name.name
+        when :call_node
+          node.message
+        end
+      end
+
       # Converts the node into a hash where the keys and values are nodes. This
       # will raise an error if the hash doesn't match the format we expect or
       # if the hash contains any splats.
       def to_hash
-        if hash? && node.elements.all? { |assoc| assoc.is_a?(Prism::AssocNode) && assoc.key.is_a?(Prism::SymbolNode) }
-          node.elements.to_h { |assoc| [RenderNode.new(assoc.key), RenderNode.new(assoc.value)] }
+        if hash?
+          if node.elements.all? { |assoc| assoc.is_a?(Prism::AssocNode) && assoc.key.is_a?(Prism::SymbolNode) }
+            node.elements.to_h { |assoc| [RenderNode.new(assoc.key), RenderNode.new(assoc.value)] }
+          end
         else
           raise CompilationError, "Unexpected node type: #{node.inspect}"
         end
@@ -105,7 +121,15 @@ module ActionviewPrecompiler
 
       def visit_call_node(node)
         if node.name.match?(MESSAGE) && !node.receiver && node.arguments
-          args = node.arguments.arguments.map { |arg| RenderNode.new(arg) }
+          args =
+            node.arguments.arguments.map do |arg|
+              if arg.is_a?(Prism::ParenthesesNode) && arg.body && arg.body.body.length == 1
+                RenderNode.new(arg.body.body.first)
+              else
+                RenderNode.new(arg)
+              end
+            end
+
           render_calls[node.name.to_sym] << RenderCall.new(args)
         end
 
