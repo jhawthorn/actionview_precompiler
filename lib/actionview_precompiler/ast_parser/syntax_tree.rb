@@ -144,8 +144,16 @@ module ActionviewPrecompiler
       def render_call(node, arguments)
         render_nodes =
           arguments.parts.map do |part|
-            if part.is_a?(SyntaxTree::Paren) && !part.contents.is_a?(SyntaxTree::Statements)
-              RenderNode.new(part.contents)
+            if part.is_a?(SyntaxTree::Paren)
+              if part.contents.is_a?(SyntaxTree::Statements)
+                if part.contents.body.length == 1
+                  RenderNode.new(part.contents.body[0])
+                else
+                  RenderNode.new(part)
+                end
+              else
+                RenderNode.new(part.contents)
+              end
             else
               RenderNode.new(part)
             end

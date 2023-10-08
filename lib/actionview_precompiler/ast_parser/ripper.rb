@@ -184,7 +184,11 @@ module ActionviewPrecompiler
       end
 
       def on_paren(content)
-        content
+        if content.type == :list && content.length == 1
+          content[0]
+        else
+          content
+        end
       end
     end
 
