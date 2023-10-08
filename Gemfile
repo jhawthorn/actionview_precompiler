@@ -15,3 +15,6 @@ end
 
 # Required only if you want to use the Syntax Tree backend.
 gem "syntax_tree", platforms: :ruby
+
+# Required only if you want to use the prism backend.
+gem "prism", platforms: :ruby
