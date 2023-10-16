@@ -1,5 +1,7 @@
 # ActionviewPrecompiler
 
+test
+
 Provides eager loading of Action View templates.
 
 This optimization aims to improve cold render times and to allow more memory to be shared via CoW on forking web servers.
