@@ -153,6 +153,16 @@ module ActionviewPrecompiler
       assert_equal [:event], renders[0].locals_keys
     end
 
+    def test_finds_render_with_yield
+      renders = parse_render_calls <<~RUBY
+        yield
+        render "users/user"
+      RUBY
+      assert_equal 1, renders.length
+      assert_equal "users/_user", renders[0].virtual_path
+      assert_equal [], renders[0].locals_keys
+    end
+
     def test_finds_renders_with_trailing_comma
       renders = parse_render_calls(%q{render("discussions/sidebar", discussion: discussion,)})
 
@@ -318,6 +328,7 @@ module ActionviewPrecompiler
     private
 
     def parse_render_calls(code, **options)
+      code = "def foo\n#{code}\nend"
       RenderParser.new(code, parser: self.class::Parser, **options).render_calls
     end
   end
