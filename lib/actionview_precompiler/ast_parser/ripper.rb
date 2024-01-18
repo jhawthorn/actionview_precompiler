@@ -184,7 +184,11 @@ module ActionviewPrecompiler
       end
 
       def on_paren(content)
-        content
+        if (content.size == 1) && (content.is_a?(Array))
+          content.first
+        else
+          content
+        end
       end
     end
 

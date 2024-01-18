@@ -128,6 +128,7 @@ module ActionviewPrecompiler
           dependency = node.variable_name
         elsif node.call?
           dependency = node.call_method_name
+          return unless dependency.is_a? String
         else
           return
         end
