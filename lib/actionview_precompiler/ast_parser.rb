@@ -10,9 +10,6 @@ module ActionviewPrecompiler
   when "jruby"
     require "actionview_precompiler/ast_parser/jruby"
     ASTParser = JRubyASTParser
-  when "syntax_tree"
-    require "actionview_precompiler/ast_parser/syntax_tree"
-    ASTParser = SyntaxTreeASTParser
   when "prism"
     require "actionview_precompiler/ast_parser/prism"
     ASTParser = PrismASTParser
