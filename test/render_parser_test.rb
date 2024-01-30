@@ -357,4 +357,11 @@ module ActionviewPrecompiler
       Parser = JRubyASTParser
     end
   end
+
+  class PrismRenderParserTest < Minitest::Test
+    include RenderParserTests
+
+    require "actionview_precompiler/ast_parser/prism"
+    Parser = PrismASTParser
+  end
 end

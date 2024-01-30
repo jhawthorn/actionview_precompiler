@@ -12,3 +12,5 @@ if rails_version = ENV.fetch("RAILS_VERSION", "main")
     gem "rails", github: "rails/rails", branch: rails_version
   end
 end
+
+gem "prism"

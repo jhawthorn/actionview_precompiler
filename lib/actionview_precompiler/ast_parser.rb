@@ -10,6 +10,9 @@ module ActionviewPrecompiler
   when "jruby"
     require "actionview_precompiler/ast_parser/jruby"
     ASTParser = JRubyASTParser
+  when "prism"
+    require "actionview_precompiler/ast_parser/prism"
+    ASTParser = PrismASTParser
   else
     require "actionview_precompiler/ast_parser/ripper"
     ASTParser = RipperASTParser
