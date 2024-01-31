@@ -13,5 +13,4 @@ if rails_version = ENV.fetch("RAILS_VERSION", "main")
   end
 end
 
-# Required only if you want to use the Syntax Tree backend.
-gem "syntax_tree", platforms: :ruby
+gem "prism"
