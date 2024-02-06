@@ -1,7 +1,13 @@
 module ActionviewPrecompiler
   parser = ENV["PRECOMPILER_PARSER"]
-  parser ||= "jruby" if RUBY_ENGINE == 'jruby'
-  parser ||= "rubyvm_ast" if RUBY_ENGINE == 'ruby'
+
+  begin
+    require "prism"
+    parser ||= "prism"
+  rescue LoadError
+    parser ||= "jruby" if RUBY_ENGINE == 'jruby'
+    parser ||= "rubyvm_ast" if RUBY_ENGINE == 'ruby'
+  end
 
   case parser
   when "rubyvm_ast"
