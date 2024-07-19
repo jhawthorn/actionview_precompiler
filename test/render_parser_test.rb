@@ -329,7 +329,7 @@ module ActionviewPrecompiler
 
     def parse_render_calls(code, **options)
       code = "def foo\n#{code}\nend"
-      RenderParser.new(code, parser: self.class::Parser, **options).render_calls
+      RenderParser.new(code, "test_file.rb", parser: self.class::Parser, **options).render_calls
     end
   end
 

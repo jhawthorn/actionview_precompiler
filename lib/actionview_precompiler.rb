@@ -13,6 +13,10 @@ require "actionview_precompiler/parsed_filename"
 module ActionviewPrecompiler
   class Error < StandardError; end
 
+  # This error is raised whenever an assumption we made wasn't met by the AST.
+  class CompilationError < StandardError
+  end
+
   # Allow overriding from ActionView default handlers if necessary
   HANDLERS_FOR_EXTENSION = Hash.new do |h, ext|
     h[ext] = ActionView::Template.handler_for_extension(ext)
