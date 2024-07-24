@@ -95,7 +95,7 @@ module ActionviewPrecompiler
       renders.group_by(&:first).collect do |method, nodes|
         [ method, nodes.collect { |v| v[1] } ]
       end.to_h
-    rescue Exception
+    rescue SyntaxError
       raise CompilationError, "Unable to parse the template in #{filename}"
     end
 
