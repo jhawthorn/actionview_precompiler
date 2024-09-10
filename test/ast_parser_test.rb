@@ -17,8 +17,18 @@ module ActionviewPrecompiler
       assert parse_render_nodes(code).size == 1
     end
 
+    def test_raises_compilation_error
+      code = '<<><><><>>'
+
+      err = assert_raises(ActionviewPrecompiler::CompilationError) do
+        parse_render_nodes(code)
+      end
+
+      assert_equal err.message, "Unable to parse the template in test_file.rb"
+    end
+
     def parse_render_nodes(code)
-      ASTParser.parse_render_nodes(code)
+      ASTParser.parse_render_nodes(code, "test_file.rb")
     end
   end
 end

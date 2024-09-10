@@ -153,9 +153,10 @@ module ActionviewPrecompiler
 
       METHODS_TO_PARSE = %w(render render_to_string layout)
 
-      def initialize(*args)
-        super
+      def initialize(filename, *args)
+        super(*args)
 
+        @filename = filename
         @render_calls = []
       end
 
@@ -190,12 +191,16 @@ module ActionviewPrecompiler
           content
         end
       end
+
+      def on_parse_error(*)
+        raise CompilationError, "Unable to parse the template in #{@filename}"
+      end
     end
 
     extend self
 
-    def parse_render_nodes(code)
-      parser = RenderCallParser.new(code)
+    def parse_render_nodes(code, filename)
+      parser = RenderCallParser.new(filename, code)
       parser.parse
 
       parser.render_calls.group_by(&:first).collect do |method, nodes|

@@ -4,10 +4,6 @@ require "prism"
 
 module ActionviewPrecompiler
   module PrismASTParser
-    # This error is raised whenever an assumption we made wasn't met by the AST.
-    class CompilationError < StandardError
-    end
-
     # Each call object is responsible for holding a list of arguments and should
     # respond to a single #arguments_node method that returns an array of
     # arguments.
@@ -140,7 +136,7 @@ module ActionviewPrecompiler
     # Main entrypoint into this AST parser variant. It's responsible for
     # returning a hash of render calls. The keys are the method names, and the
     # values are arrays of call objects.
-    def self.parse_render_nodes(code)
+    def self.parse_render_nodes(code, filename)
       visitor = RenderVisitor.new
       result = Prism.parse(code)
 
@@ -148,7 +144,7 @@ module ActionviewPrecompiler
         result.value.accept(visitor)
         visitor.render_calls
       else
-        raise CompilationError, "Unable to parse the template"
+        raise CompilationError, "Unable to parse the template in #{filename}"
       end
     end
   end

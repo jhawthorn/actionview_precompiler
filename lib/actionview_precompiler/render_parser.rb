@@ -2,14 +2,15 @@ module ActionviewPrecompiler
   RenderCall = Struct.new(:virtual_path, :locals_keys)
 
   class RenderParser
-    def initialize(code, parser: ASTParser, from_controller: false)
+    def initialize(code, filename, parser: ASTParser, from_controller: false)
       @code = code
+      @filename = filename
       @parser = parser
       @from_controller = from_controller
     end
 
     def render_calls
-      render_nodes = @parser.parse_render_nodes(@code)
+      render_nodes = @parser.parse_render_nodes(@code, @filename)
       render_nodes.map do |method, nodes|
         parse_method = case method
         when :layout

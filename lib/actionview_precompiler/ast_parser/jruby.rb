@@ -88,13 +88,15 @@ module ActionviewPrecompiler
 
     METHODS_TO_PARSE = %i(render render_to_string layout)
 
-    def parse_render_nodes(code)
+    def parse_render_nodes(code, filename)
       node = Node.wrap(JRuby.parse(code))
 
       renders = extract_render_nodes(node)
       renders.group_by(&:first).collect do |method, nodes|
         [ method, nodes.collect { |v| v[1] } ]
       end.to_h
+    rescue SyntaxError
+      raise CompilationError, "Unable to parse the template in #{filename}"
     end
 
     def node?(node)
