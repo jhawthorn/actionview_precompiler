@@ -7,6 +7,7 @@ require "actionview_precompiler/template_parser"
 require "actionview_precompiler/render_parser"
 require "actionview_precompiler/controller_parser"
 require "actionview_precompiler/helper_parser"
+require "actionview_precompiler/cache"
 require "actionview_precompiler/precompiler"
 require "actionview_precompiler/parsed_filename"
 
@@ -22,8 +23,8 @@ module ActionviewPrecompiler
     h[ext] = ActionView::Template.handler_for_extension(ext)
   end
 
-  def self.precompile(verbose: false)
-    precompiler = Precompiler.new(verbose: verbose)
+  def self.precompile(verbose: false, cache_path: nil)
+    precompiler = Precompiler.new(verbose: verbose, cache_path: cache_path)
 
     if block_given?
       # Custom configuration
