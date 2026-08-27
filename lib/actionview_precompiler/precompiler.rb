@@ -1,3 +1,5 @@
+require "set"
+
 require "actionview_precompiler/template_scanner"
 require "actionview_precompiler/controller_scanner"
 require "actionview_precompiler/helper_scanner"
@@ -31,6 +33,8 @@ module ActionviewPrecompiler
     end
 
     def run
+      @loader.eager_load_resolvers!
+
       count = 0
       template_renders.each do |virtual_path, locals|
         debug "precompiling: #{virtual_path}"

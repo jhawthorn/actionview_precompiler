@@ -61,6 +61,20 @@ It can also be run in verbose mode, which I use to tell which views it has detec
 ActionviewPrecompiler.precompile(verbose: true)
 ```
 
+### How precompilation uses `eager_load_templates`
+
+On Rails versions that ship `ActionView::FileSystemResolver#eager_load_templates`
+(Rails main / 8.2+), `precompile` warms every resolver's unbound-template
+cache in a single directory walk before compiling per-render-call locals.
+Without this, the resolver globs the view directory once per virtual path
+looked up, which dominates precompilation cost on apps with many templates.
+
+The AST-based render-call discovery still runs; only the resolver lookups
+are shortcut. On older Rails versions this step is a no-op and the previous
+behavior is preserved.
+
+See `benchmark/eager_load_templates.rb` for the harness that measures both.
+
 ## TODO
 
 * Support more `render` invocations
