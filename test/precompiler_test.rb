@@ -11,6 +11,16 @@ module ActionviewPrecompiler
       assert_includes template_renders, expected_render
     end
 
+    def test_strict_locals_templates
+      skip unless defined?(ActionView::Template::STRICT_LOCALS_REGEX)
+
+      precompiler = Precompiler.new
+      precompiler.scan_view_dir FIXTURES_VIEW_DIR
+      strict_renders = precompiler.template_renders.select { |path, _| path == "users/_strict" }
+
+      assert_equal [["users/_strict", []]], strict_renders
+    end
+
     def test_precompiler_run
       reset_action_view!
 

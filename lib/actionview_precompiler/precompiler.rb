@@ -57,6 +57,10 @@ module ActionviewPrecompiler
 
       template_renders.uniq!
 
+      # Templates with strict locals compile once regardless of locals
+      strict_locals_paths = @scanners.grep(TemplateScanner).flat_map(&:strict_locals_paths)
+      template_renders.reject! { |path, locals| locals.any? && strict_locals_paths.include?(path) }
+
       @template_renders = template_renders
     end
 
